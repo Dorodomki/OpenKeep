@@ -9,14 +9,12 @@
 	if(!prev_lying)
 		gib_animation()
 
+	spill_embedded_objects()
+
 	spill_organs(no_brain, no_organs, no_bodyparts)
 
 	if(!no_bodyparts)
 		spread_bodyparts(no_brain, no_organs)
-
-	for(var/obj/item/I in simple_embedded_objects)
-		simple_embedded_objects -= I
-		I.forceMove(get_turf(src))
 
 	spawn_gibs(no_bodyparts)
 	qdel(src)
@@ -27,6 +25,10 @@
 /mob/living/proc/spawn_gibs()
 	new /obj/effect/gibspawner/generic(drop_location(), src, get_static_viruses())
 
+/mob/living/proc/spill_embedded_objects()
+	for(var/obj/item/embedded_item as anything in simple_embedded_objects)
+		simple_remove_embedded_object(embedded_item)
+
 /mob/living/proc/spill_organs()
 	return
 
@@ -35,6 +37,8 @@
 
 /mob/living/dust(just_ash, drop_items, force)
 	death(TRUE)
+
+	spill_embedded_objects()
 
 	if(drop_items)
 		unequip_everything()
@@ -91,6 +95,8 @@
 	if(!gibbed && !QDELETED(src))
 		addtimer(CALLBACK(src, PROC_REF(med_hud_set_status)), (DEFIB_TIME_LIMIT * 10) + 1)
 	stop_pulling()
+
+	to_chat(src, span_green("A bleak afterlife awaits...but the Gods may let you walk again in another shape! Spirit, you must descend in a Journey to the Afterlife and wait there for judgment..."))
 
 	. = ..()
 

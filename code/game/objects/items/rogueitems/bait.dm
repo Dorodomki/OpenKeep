@@ -1,7 +1,7 @@
 
 /obj/item/bait
 	name = "bag of bait"
-	desc = ""
+	desc = "Horrid smell to me, wonderful smell to big game."
 	icon_state = "bait"
 	icon = 'icons/roguetown/items/misc.dmi'
 	lefthand_file = 'icons/mob/inhands/misc/food_lefthand.dmi'
@@ -12,6 +12,7 @@
 	var/list/attracted_types = list(/mob/living/simple_animal/hostile/retaliate/rogue/bigrat = 10,
 										/mob/living/simple_animal/hostile/retaliate/rogue/goat = 33,
 									/mob/living/simple_animal/hostile/retaliate/rogue/goatmale = 33,
+									/mob/living/simple_animal/pet/cat/rogue/cabbit = 33,
 									/mob/living/simple_animal/hostile/retaliate/rogue/chicken = 55)
 	var/attraction_chance = 100
 	var/deployed = 0
@@ -79,6 +80,10 @@
 						if(T)
 							var/mob/M = pickweight(attracted_types)
 							new M(T)
+							if(prob(66))
+								new /obj/item/storage/roguebag/crafted(T)
+							else
+								new /obj/item/natural/cloth(T)
 							qdel(src)
 					else
 						qdel(src)
@@ -86,16 +91,23 @@
 
 /obj/item/bait/sweet
 	name = "bag of sweetbait"
+	desc = "This bait doesn't smell as bad. I might even try a bite.."
 	icon_state = "baitp"
 	attracted_types = list(/mob/living/simple_animal/hostile/retaliate/rogue/goat = 33,
 							/mob/living/simple_animal/hostile/retaliate/rogue/goatmale = 33,
+							/mob/living/simple_animal/pet/cat/rogue/cabbit = 50, // Rabbits love sweet things
 							/mob/living/simple_animal/hostile/retaliate/rogue/saiga = 20,
 							/mob/living/simple_animal/hostile/retaliate/rogue/saigabuck = 20,
-							/mob/living/simple_animal/hostile/retaliate/rogue/wolf = 20)
+							/mob/living/simple_animal/hostile/retaliate/rogue/wolf = 10)
 
 
 /obj/item/bait/bloody
 	name = "bag of bloodbait"
+	desc = "A deployable bag of bait used by hunters to attract predators within the wilds."
 	icon_state = "baitb"
-	attracted_types = list(/mob/living/simple_animal/hostile/retaliate/rogue/wolf = 20,
-						/mob/living/simple_animal/hostile/retaliate/rogue/bigrat = 10)
+	attracted_types = list(/mob/living/simple_animal/hostile/retaliate/rogue/wolf = 33,
+						/mob/living/simple_animal/hostile/retaliate/rogue/bigrat = 10,
+						/mob/living/simple_animal/hostile/retaliate/rogue/mole = 15,
+						/mob/living/simple_animal/hostile/retaliate/rogue/troll = 5,
+						/mob/living/simple_animal/hostile/retaliate/rogue/trollbog = 5,
+						/mob/living/simple_animal/hostile/retaliate/rogue/troll/caerbannog = 2.5)

@@ -1,4 +1,4 @@
-/obj/item/clothing/suit/roguetown/armor/plate/half/iron/goblin
+/obj/item/clothing/suit/roguetown/armor/cuirass/iron/goblin
 	name = "goblin mail"
 	icon_state = "plate_armor_item"
 	item_state = "plate_armor"
@@ -9,11 +9,11 @@
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS
 	anvilrepair = /datum/skill/craft/armorsmithing
 	max_integrity = 60
-	armor_class = ARMOR_CLASS_MEDIUM
+	armor_class = ARMOR_CLASS_LIGHT // Otherwise they get knocked down TOO easily!!!
 	sellprice = 0
 
 /obj/item/clothing/suit/roguetown/armor/leather/goblin
-	name = "goblin armor"
+	name = "goblin leather armor"
 	icon_state = "leather_armor_item"
 	item_state = "leather_armor"
 	icon = 'icons/roguetown/mob/monster/goblins.dmi'
@@ -23,6 +23,7 @@
 	max_integrity = 60
 	allowed_race = list("goblin")
 	sellprice = 0
+	smeltresult = /obj/item/ash
 
 /obj/item/clothing/suit/roguetown/armor/leather/hide/goblin
 	name = "goblin loincloth"
@@ -33,9 +34,10 @@
 	armor = list("melee" = 30, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
 	body_parts_covered = CHEST|GROIN
 	sellprice = 0
+	smeltresult = /obj/item/ash
 
 /obj/item/clothing/head/roguetown/helmet/leather/goblin
-	name = "goblin helmet"
+	name = "goblin leather helmet"
 	icon_state = "leather_helm_item"
 	item_state = "leather_helm"
 	icon = 'icons/roguetown/mob/monster/goblins.dmi'
@@ -43,11 +45,13 @@
 	body_parts_covered = HEAD|EARS|HAIR|EYES
 	allowed_race = list("goblin")
 	sellprice = 0
+	smeltresult = /obj/item/ash
 
 /obj/item/clothing/head/roguetown/helmet/goblin
 	name = "goblin helmet"
 	icon_state = "plate_helm_item"
 	item_state = "plate_helm"
+	smeltresult = /obj/item/ingot/iron
 	icon = 'icons/roguetown/mob/monster/goblins.dmi'
 	allowed_race = list("goblin")
 	armor = list("melee" = 80, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)

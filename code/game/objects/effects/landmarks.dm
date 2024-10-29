@@ -64,7 +64,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	icon_state = "generic_event"
 
 /obj/effect/landmark/events/haunts/Initialize(mapload)
-	..()
+	. = ..()
 	GLOB.hauntstart += src
 	icon_state = ""
 
@@ -75,7 +75,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	var/aportalloc = "a"
 
 /obj/effect/landmark/events/testportal/Initialize(mapload)
-	..()
+	. = ..()
 //	GLOB.hauntstart += loc
 #ifdef TESTSERVER
 	var/obj/structure/fluff/testportal/T = new /obj/structure/fluff/testportal(loc)
@@ -87,7 +87,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 /obj/effect/landmark/start/adventurerlate
 	name = "Adventurerlate"
 	icon_state = "arrow"
-	jobspawn_override = list("Adventurer", "Pilgrim", "skeleton")
+	jobspawn_override = list("Skeleton", "Drifter", "Pilgrim", "Adventurer")
 	delete_after_roundstart = FALSE
 
 /obj/effect/landmark/start/vagrantlate
@@ -114,6 +114,12 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	jobspawn_override = list("Towner")
 	delete_after_roundstart = FALSE
 
+/obj/effect/landmark/start/combatlate
+	name = "Combatlate"
+	icon_state = "arrow"
+	jobspawn_override = list("Skeleton", "Drifter", "Pilgrim", "Adventurer", "Mercenary")
+	delete_after_roundstart = FALSE
+
 /obj/effect/landmark/start/lord
 	name = "King"
 	icon_state = "arrow"
@@ -124,10 +130,6 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 
 /obj/effect/landmark/start/sheriff
 	name = "Captain"
-	icon_state = "arrow"
-
-/obj/effect/landmark/start/barkeep
-	name = "Barkeep"
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/steward
@@ -163,7 +165,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/woodsman
-	name = "Village Elder"
+	name = "Mayor"
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/priest
@@ -179,19 +181,23 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/puritan
-	name = "Puritan"
+	name = "Inquisitor"
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/shepherd
-	name = "Confessor"
+	name = "Adept"
+	icon_state = "arrow"
+
+/obj/effect/landmark/start/templar
+	name = "Templar"
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/nightman
-	name = "Nightman"
+	name = "Niteman"
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/nightmaiden
-	name = "Nightmaiden"
+	name = "Nitemaiden"
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/merchant
@@ -202,12 +208,15 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	name = "Grabber"
 	icon_state = "arrow"
 
+/obj/effect/landmark/start/barkeep //Go figure someone breaks something
+	name = "Innkeep"
+	icon_state = "arrow"
 
 /obj/effect/landmark/start/innkeep
 	name = "Innkeep"
 	icon_state = "arrow"
 
-/obj/effect/landmark/start/apothecary
+/obj/effect/landmark/start/archivist
 	name = "Archivist"
 	icon_state = "arrow"
 
@@ -295,13 +304,12 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	name = "Butler"
 	icon_state = "arrow"
 
-/obj/effect/landmark/start/barkeeper
-	name = "Barkeeper"
-	icon_state = "arrow"
-
-
 /obj/effect/landmark/start/adventurer
 	name = "Adventurer"
+	icon_state = "arrow"
+
+/obj/effect/landmark/start/feldsher
+	name = "Feldsher"
 	icon_state = "arrow"
 
 //yrf
@@ -513,7 +521,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	icon_state = "wiznerd_spawn"
 
 /obj/effect/landmark/start/wizard/Initialize()
-	..()
+	. = ..()
 	GLOB.wizardstart += loc
 
 /obj/effect/landmark/start/nukeop
@@ -522,7 +530,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	icon_state = "snukeop_spawn"
 
 /obj/effect/landmark/start/nukeop/Initialize()
-	..()
+	. = ..()
 	GLOB.nukeop_start += loc
 
 /obj/effect/landmark/start/bandit
@@ -531,7 +539,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/bandit/Initialize()
-	..()
+	. = ..()
 	GLOB.bandit_starts += loc
 
 
@@ -541,7 +549,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	icon_state = "arrow"
 
 /obj/effect/landmark/start/delf/Initialize()
-	..()
+	. = ..()
 	GLOB.delf_starts += loc
 
 
@@ -551,7 +559,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	icon_state = "snukeop_leader_spawn"
 
 /obj/effect/landmark/start/nukeop_leader/Initialize()
-	..()
+	. = ..()
 	GLOB.nukeop_leader_start += loc
 
 // Must be immediate because players will
@@ -562,7 +570,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/start/new_player)
 	name = "New Player"
 
 /obj/effect/landmark/start/new_player/Initialize()
-	..()
+	. = ..()
 	GLOB.newplayer_start += loc
 
 /obj/effect/landmark/latejoin
@@ -720,7 +728,6 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/start/new_player)
 	name = "safe zone"
 
 /obj/effect/landmark/underworldcoin/Initialize(mapload)
-	GLOB.underworldcoin += loc
-	return
-
-
+	SHOULD_CALL_PARENT(FALSE)
+	GLOB.underworldcoinspawns += loc
+	return INITIALIZE_HINT_QDEL

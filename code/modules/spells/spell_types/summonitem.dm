@@ -40,7 +40,7 @@
 				else
 					message = "<span class='warning'>I must hold the desired item in your hands to mark it for recall!</span>"
 
-		else if(marked_item && marked_item in hand_items) //unlinking item to the spell
+		else if(marked_item && (marked_item in hand_items)) //unlinking item to the spell
 			message = "<span class='notice'>I remove the mark on [marked_item] to use elsewhere.</span>"
 			name = "Instant Summons"
 			marked_item = 		null
@@ -83,11 +83,8 @@
 							for(var/X in C.bodyparts)
 								var/obj/item/bodypart/part = X
 								if(item_to_retrieve in part.embedded_objects)
-									part.embedded_objects -= item_to_retrieve
+									part.remove_embedded_object(item_to_retrieve)
 									to_chat(C, "<span class='warning'>The [item_to_retrieve] that was embedded in your [L] has mysteriously vanished. How fortunate!</span>")
-									if(!C.has_embedded_objects())
-										C.clear_alert("embeddedobject")
-										SEND_SIGNAL(C, COMSIG_CLEAR_MOOD_EVENT, "embedded")
 									break
 
 					else

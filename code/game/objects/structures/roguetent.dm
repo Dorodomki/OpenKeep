@@ -1,7 +1,7 @@
 
 /obj/structure/roguetent
 	name = "tent door"
-	desc = ""
+	desc = "A door made of sturdy fabric and wooden frames."
 	icon = 'icons/turf/roguewall.dmi'
 	icon_state = "tent_door1"
 	layer = TABLE_LAYER
@@ -49,3 +49,7 @@
 		close_up(user)
 	else
 		open_up(user)
+
+// Preopen version, so visuals and opacity matches up round start.
+/obj/structure/roguetent/preopen
+	density = FALSE

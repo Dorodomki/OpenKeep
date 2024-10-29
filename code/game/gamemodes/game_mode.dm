@@ -51,6 +51,21 @@
 	var/gamemode_ready = FALSE //Is the gamemode all set up and ready to start checking for ending conditions.
 	var/setup_error		//What stopepd setting up the mode.
 
+	var/list/datum/mind/villains = list() //Murders Runtimes via shoving this into parent
+	var/list/datum/mind/vampires = list()
+	var/list/datum/mind/deathknights = list() // Ditto as villains mind list.
+	var/list/datum/mind/werewolves = list()
+	var/list/datum/mind/bandits = list()
+	var/list/datum/mind/cultists = list()
+
+	var/list/datum/mind/pre_villains = list()
+	var/list/datum/mind/pre_werewolves = list()
+	var/list/datum/mind/pre_vampires = list()
+	var/list/datum/mind/pre_bandits = list()
+	var/list/datum/mind/pre_delfs = list()
+	var/list/datum/mind/pre_rebels = list()
+	var/list/datum/mind/pre_cultists = list()
+
 /datum/game_mode/proc/announce() //Shows the gamemode's name and a fast description.
 	to_chat(world, "<b>The gamemode is: <span class='[announce_span]'>[name]</span>!</b>")
 	to_chat(world, "<b>[announce_text]</b>")
@@ -193,7 +208,7 @@
 		message_admins("Roundtype conversion cancelled, the game appears to have finished!")
 		round_converted = 0
 		return
-	 //somewhere between 1 and 3 minutes from now
+	//somewhere between 1 and 3 minutes from now
 	if(!CONFIG_GET(keyed_list/midround_antag)[SSticker.mode.config_tag])
 		round_converted = 0
 		return 1
@@ -372,13 +387,17 @@
 		if(player.ready == PLAYER_READY_TO_PLAY && player.check_preferences())
 //			if(player.client && player.client.whitelisted() && !player.client.blacklisted())
 			players += player
+			continue
+		if(player.client in SSrole_class_handler.drifter_wave_FULLY_entered_clients)
+			players += player
+			continue
 
 	// Shuffling, the players list is now ping-independent!!!
 	// Goodbye antag dante
 	players = shuffle(players)
 
 	for(var/mob/dead/new_player/player in players)
-		if(player.client && player.ready == PLAYER_READY_TO_PLAY)
+		if(player.client && player.ready == PLAYER_READY_TO_PLAY || (player.client in SSrole_class_handler.drifter_wave_FULLY_entered_clients))
 			if(check_pq)
 				if(get_playerquality(player.ckey) <= -10)
 					continue

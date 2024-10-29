@@ -77,12 +77,6 @@ SUBSYSTEM_DEF(mapping)
 	if(CONFIG_GET(flag/roundstart_away))
 		createRandomZlevel()
 
-	// Load the virtual reality hub
-	if(CONFIG_GET(flag/virtual_reality))
-		to_chat(world, "<span class='boldannounce'>Loading virtual reality...</span>")
-		load_new_z_level("_maps/RandomZLevels/VR/vrhub.dmm", "Virtual Reality Hub")
-		to_chat(world, "<span class='boldannounce'>Virtual reality loaded.</span>")
-
 	// Generate mining ruins
 	loading_ruins = TRUE
 	var/list/lava_ruins = levels_by_trait(ZTRAIT_LAVA_RUINS)
@@ -135,8 +129,8 @@ SUBSYSTEM_DEF(mapping)
 		returning += M
 		qdel(T, TRUE)
 
-/* Nuke threats, for making the blue tiles on the station go RED
-   Used by the AI doomsday and the self destruct nuke.
+/*	Nuke threats, for making the blue tiles on the station go RED
+	Used by the AI doomsday and the self destruct nuke.
 */
 
 /datum/controller/subsystem/mapping/proc/add_nuke_threat(datum/nuke)
@@ -241,15 +235,19 @@ SUBSYSTEM_DEF(mapping)
 
 	var/list/otherZ = list()
 
-	#ifndef FASTLOAD
+	//For Dakka map
+/*	otherZ += load_map_config("_maps/map_files/dakkatown/otherz/dakkacoast.json")
+	otherZ += load_map_config("_maps/map_files/dakkatown/otherz/dakkaforest.json")
+	otherZ += load_map_config("_maps/map_files/dakkatown/otherz/dakkamountain.json")
+	otherZ += load_map_config("_maps/map_files/dakkatown/otherz/dakkaswamp.json")*/
+
+	//For Rogue map
 	otherZ += load_map_config("_maps/map_files/roguetown/otherz/smallforest.json")
 	otherZ += load_map_config("_maps/map_files/roguetown/otherz/smalldecap.json")
 	otherZ += load_map_config("_maps/map_files/roguetown/otherz/smallswamp.json")
+
+	//For all maps
 	otherZ += load_map_config("_maps/map_files/roguetown/otherz/underworld.json")
-	#endif
-	#ifdef ROGUEWORLD
-	otherZ += load_map_config("_maps/map_files/roguetown/otherz/rogueworld.json")
-	#endif
 //	otherZ += load_map_config("_maps/map_files/roguetown/otherz/special.json")
 	if(otherZ.len)
 		for(var/datum/map_config/OtherZ in otherZ)

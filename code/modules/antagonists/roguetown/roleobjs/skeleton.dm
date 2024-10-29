@@ -3,7 +3,7 @@
 	name = "Skeleton"
 	increase_votepwr = FALSE
 
-/datum/antagonist/zombie/examine_friendorfoe(datum/antagonist/examined_datum,mob/examiner,mob/examined)
+/datum/antagonist/skeleton/examine_friendorfoe(datum/antagonist/examined_datum,mob/examiner,mob/examined)
 	if(istype(examined_datum, /datum/antagonist/vampirelord))
 		var/datum/antagonist/vampirelord/V = examined_datum
 		if(!V.disguised)
@@ -31,7 +31,7 @@
 
 /datum/antagonist/skeleton/roundend_report()
 	return
-	var/traitorwin = TRUE
+/* 	var/traitorwin = TRUE
 
 	if(objectives.len)//If the traitor had no objectives, don't need to process this.
 		for(var/datum/objective/objective in objectives)
@@ -48,5 +48,5 @@
 	else
 		to_chat(owner.current, "<span class='redtext'>I've FAILED to invade Arcadia!</span>")
 		if(owner.current)
-			owner.current.playsound_local(get_turf(owner.current), 'sound/misc/fail.ogg', 100, FALSE, pressure_affected = FALSE)
+			owner.current.playsound_local(get_turf(owner.current), 'sound/misc/fail.ogg', 100, FALSE, pressure_affected = FALSE) */
 

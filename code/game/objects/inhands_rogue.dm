@@ -1,24 +1,17 @@
-/obj/item
-	var/list/onprop = list()
-//#ifdef TESTSERVER
-	var/force_reupdate_inhand = TRUE
-//#else
-//	var/force_reupdate_inhand = FALSE
-//#endif
+// Helper items for spriters so they can see how in-hands look in game.
+// They're basically red square sprites placed on the floor so spriters can adjust their sprites properly
+// Used on admin testing area only.
 
-// Initalize addon for the var for custom inhands 32x32. 
-/obj/item/Initialize()
-	. = ..()
-	if(!experimental_inhand)
-		inhand_x_dimension = 32
-		inhand_y_dimension = 32
-
+// 32x32 in-hand helper item
 /obj/item/inhand_tester
 	icon = 'icons/roguetown/items/misc.dmi'
 	icon_state = "inhand_test"
 
+// 64x64 in-hand helper item
 /obj/item/inhand_tester/big
 	icon = 'icons/roguetown/misc/64x64.dmi'
+
+// START OF ROGUE PROCS NECESSARY FOR ITEM TRANSFORMS, ETC
 
 /obj/item/proc/getmoboverlay(tag, prop, behind = FALSE, mirrored = FALSE)
 	var/used_index = icon_state
@@ -73,13 +66,13 @@
 	var/used_mask = 'icons/roguetown/helpers/inhand_64.dmi'
 	var/icon/returned = icon(used_mask, "blank")
 	var/icon/blended
-//	var/skipoverlays = FALSE
+	var/skipoverlays = FALSE
 	if(behind)
 		var/icon/J = new(icon)
 		var/list/istates = J.IconStates()
 		if(istates.Find("[icon_state]_behind"))
 			blended=icon("icon"=icon, "icon_state"="[icon_state]_behind")
-//			skipoverlays = TRUE
+			skipoverlays = TRUE
 		else
 		//	blended=icon("icon"=icon, "icon_state"=icon_state)
 //			blended=getFlatIcon(src)
@@ -98,13 +91,13 @@
 //	if(color) //getflat does this i think?
 //		blended.Blend(color,ICON_MULTIPLY)
 
-//	if(!skipoverlays)
-//		for(var/V in overlays)
-//			var/image/IM = V
-//			var/icon/image_overlay = new(IM.icon,IM.icon_state)
-//			if(IM.color)
-//				image_overlay.Blend(IM.color,ICON_MULTIPLY)
-//			blended.Blend(image_overlay,ICON_OVERLAY)
+	if(!skipoverlays)
+		for(var/V in overlays)
+			var/image/IM = V
+			var/icon/image_overlay = new(IM.icon,IM.icon_state)
+			if(IM.color)
+				image_overlay.Blend(IM.color,ICON_MULTIPLY)
+			blended.Blend(image_overlay,ICON_OVERLAY)
 
 	var/icon/holder
 	if(blended.Height() == 32)

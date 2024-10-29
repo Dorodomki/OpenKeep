@@ -4,7 +4,7 @@
 	var/t_has = p_have()
 	var/t_is = p_are()
 
-	. = list("<span class='info'>✠ ------------ ✠\nThis is \a <EM>[src]</EM>!")
+	. = list("<span class='info'>ᛉ ------------ ᛉ\nThis is \a <EM>[src]</EM>!")
 	var/list/obscured = check_obscured_slots()
 
 	var/m1 = "[t_He] [t_is]"
@@ -34,14 +34,14 @@
 /*	if (stat == DEAD)
 		appears_dead = 1
 		if(getorgan(/obj/item/organ/brain))
-			. += "<span class='deadsay'>[t_He] [t_is] limp and unresponsive, with no signs of life.</span>"
+			. += "<span class='dead'>[t_He] [t_is] limp and unresponsive, with no signs of life.</span>"
 		else if(get_bodypart(BODY_ZONE_HEAD))
-			. += "<span class='deadsay'>It appears that [t_his] brain is missing...</span>"*/
+			. += "<span class='dead'>It appears that [t_his] brain is missing...</span>"*/
 
 	var/list/missing = get_missing_limbs()
 	for(var/t in missing)
 		if(t==BODY_ZONE_HEAD)
-			. += "<span class='deadsay'><B>[capitalize(m2)] [parse_zone(t)] is gone.</B></span>"
+			. += "<span class='dead'><B>[capitalize(m2)] [parse_zone(t)] is gone.</B></span>"
 			continue
 		. += "<span class='warning'><B>[capitalize(m2)] [parse_zone(t)] is gone.</B></span>"
 
@@ -124,4 +124,4 @@
 				. += "[t_He] look[p_s()] very happy."
 			if(MOOD_LEVEL_HAPPY4 to INFINITY)
 				. += "[t_He] look[p_s()] ecstatic."
-	. += "✠ ------------ ✠</span>"
+	. += "ᛉ ------------ ᛉ</span>"

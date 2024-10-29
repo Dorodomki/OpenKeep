@@ -3,7 +3,7 @@
 	id = "vampire"
 	default_color = "FFFFFF"
 	species_traits = list(EYECOLOR,HAIR,FACEHAIR,LIPS,DRINKSBLOOD)
-	inherent_traits = list(TRAIT_NOHUNGER,TRAIT_NOBREATH)
+	inherent_traits = list(TRAIT_NOHUNGER,TRAIT_NOBREATH,TRAIT_NOSLEEP)
 	inherent_biotypes = MOB_UNDEAD|MOB_HUMANOID
 	default_features = list("mcolor" = "FFF", "tail_human" = "None", "ears" = "None", "wings" = "None")
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_PRIDE | MIRROR_MAGIC | ERT_SPAWN
@@ -85,7 +85,7 @@
 			return
 		if(H.pulling && iscarbon(H.pulling))
 			var/mob/living/carbon/victim = H.pulling
-			if(H.blood_volume >= BLOOD_VOLUME_MAXIMUM)
+			if(H.blood_volume >= BLOOD_VOLUME_NORMAL)
 				to_chat(H, "<span class='warning'>You're already full!</span>")
 				return
 			if(victim.stat == DEAD)
@@ -121,11 +121,11 @@
 /mob/living/carbon/Stat()
 	..()
 	return
-	if(statpanel("Status")) //RTCHANGE
+/* 	if(statpanel("Status")) //RTCHANGE
 		var/obj/item/organ/heart/vampire/darkheart = getorgan(/obj/item/organ/heart/vampire)
 		if(darkheart)
 			stat(null, "<span class='notice'>Current blood level: [blood_volume]/[BLOOD_VOLUME_MAXIMUM].</span>")
-			return 1
+			return 1 */
 
 
 /obj/item/organ/heart/vampire

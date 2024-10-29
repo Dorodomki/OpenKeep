@@ -3,21 +3,21 @@
 GLOBAL_VAR(restart_counter)
 
 /**
-  * World creation
-  *
-  * Here is where a round itself is actually begun and setup, lots of important config changes happen here
-  * * db connection setup
-  * * config loaded from files
-  * * loads admins
-  * * Sets up the dynamic menu system
-  * * and most importantly, calls initialize on the master subsystem, starting the game loop that causes the rest of the game to begin processing and setting up
-  *
-  * Note this happens after the Master subsystem is created (as that is a global datum), this means all the subsystems exist,
-  * but they have not been Initialized at this point, only their New proc has run
-  *
-  * Nothing happens until something moves. ~Albert Einstein
-  *
-  */
+ * World creation
+ *
+ * Here is where a round itself is actually begun and setup, lots of important config changes happen here
+ * * db connection setup
+ * * config loaded from files
+ * * loads admins
+ * * Sets up the dynamic menu system
+ * * and most importantly, calls initialize on the master subsystem, starting the game loop that causes the rest of the game to begin processing and setting up
+ *
+ * Note this happens after the Master subsystem is created (as that is a global datum), this means all the subsystems exist,
+ * but they have not been Initialized at this point, only their New proc has run
+ *
+ * Nothing happens until something moves. ~Albert Einstein
+ *
+ */
 
 /world/New()
 
@@ -84,11 +84,13 @@ GLOBAL_VAR(restart_counter)
 	if(NO_INIT_PARAMETER in params)
 		return
 
+	. = ..()
+
 	Master.Initialize(10, FALSE, TRUE)
 
-	if(TEST_RUN_PARAMETER in params)
-		HandleTestRun()
-
+#ifdef UNIT_TESTS
+	HandleTestRun()
+#endif
 
 /world/proc/HandleTestRun()
 	//trigger things to run the whole process
@@ -154,6 +156,7 @@ GLOBAL_VAR(restart_counter)
 	GLOB.world_qdel_log = "[GLOB.log_directory]/qdel.log"
 	GLOB.world_map_error_log = "[GLOB.log_directory]/map_errors.log"
 	GLOB.character_list_log = "[GLOB.log_directory]/character_list.log"
+	GLOB.hunted_log = "[GLOB.log_directory]/hunted.log"
 	GLOB.world_runtime_log = "[GLOB.log_directory]/runtime.log"
 	GLOB.query_debug_log = "[GLOB.log_directory]/query_debug.log"
 	GLOB.world_job_debug_log = "[GLOB.log_directory]/job_debug.log"
@@ -175,6 +178,7 @@ GLOBAL_VAR(restart_counter)
 	start_log(GLOB.world_job_debug_log)
 	start_log(GLOB.tgui_log)
 	start_log(GLOB.character_list_log)
+	start_log(GLOB.hunted_log)
 
 	GLOB.changelog_hash = md5('html/changelog.html') //for telling if the changelog has changed recently
 	if(fexists(GLOB.config_error_log))
@@ -270,9 +274,10 @@ GLOBAL_VAR(restart_counter)
 
 	TgsReboot()
 
-	if(TEST_RUN_PARAMETER in params)
-		FinishTestRun()
-		return
+#ifdef UNIT_TESTS
+	FinishTestRun()
+	return
+#endif
 
 	if(TgsAvailable())
 		send2chat(new /datum/tgs_message_content("Round ending!"), CONFIG_GET(string/chat_announce_new_game))
@@ -305,10 +310,13 @@ GLOBAL_VAR(restart_counter)
 
 /world/proc/update_status()
 	var/s = ""
-	s += "<center><a href=\"https://discord.gg/6UzZQYqVHT\">"
+	s += "<center><a href=\"https://discord.gg/stonekeep\">"
 #ifdef MATURESERVER
-	s += "<big><b>STONEKEEP (18+)</b></big></a><br>"
-	s += "<b>Dark Medieval Fantasy World Roleplay,Whitelist Adult Content. https://discord.gg/224QdHzv3x</b></center><br>"
+	s += "<big><b>STONEKEEP (18+) (Immersive RP)</b></big></a><br>"
+	s += "<b>Dark Medieval Fantasy Roleplay<b><br>"
+	s += "<b>New Map: Dun Manor<b><br>"
+	s += "<b>Whitelist Enabled: discord.gg/stonekeep</b></center><br>"
+	//s += "<b>Powerbottoms Welcome</b><br>"
 #else
 	s += "<big><b>ROGUEWORLD</b></big></a><br>"
 	s += "<b>Fantasy Computer Survival Game</b></center><br>"

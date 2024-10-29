@@ -26,13 +26,13 @@
 #define SUBMIT_INTENT 1
 
 //Blood levels
-#define BLOOD_VOLUME_MAXIMUM		600
-#define BLOOD_VOLUME_SLIME_SPLIT	1120
-#define BLOOD_VOLUME_NORMAL			500
-#define BLOOD_VOLUME_SAFE			450
-#define BLOOD_VOLUME_OKAY			350
-#define BLOOD_VOLUME_BAD			250
-#define BLOOD_VOLUME_SURVIVE		100
+#define BLOOD_VOLUME_MAXIMUM 2240
+#define BLOOD_VOLUME_SLIME_SPLIT 1120
+#define BLOOD_VOLUME_NORMAL 1120
+#define BLOOD_VOLUME_SAFE 950
+#define BLOOD_VOLUME_OKAY 672
+#define BLOOD_VOLUME_BAD 448
+#define BLOOD_VOLUME_SURVIVE 244
 
 //Sizes of mobs, used by mob/living/var/mob_size
 #define MOB_SIZE_TINY 0
@@ -70,9 +70,10 @@
 
 #define BODYPART_NOT_DISABLED 0
 #define BODYPART_DISABLED_DAMAGE 1
-#define BODYPART_DISABLED_PARALYSIS 2
-#define BODYPART_DISABLED_CRIT 3 //plays a sound
-#define BODYPART_DISABLED_FALL 4 //temporary 60 seconds paralyzed
+#define BODYPART_DISABLED_PARALYSIS 2 //either a fall or twisting the limb
+#define BODYPART_DISABLED_WOUND 3 //bone fracture
+#define BODYPART_DISABLED_ROT 4 //limb is rotten oh nooo
+#define BODYPART_DISABLED_CLAMPED 5 //limb is clamped by a hemostat or speculum
 
 #define DEFAULT_BODYPART_ICON_ORGANIC 'icons/mob/human_parts_greyscale.dmi'
 #define DEFAULT_BODYPART_ICON_ROBOTIC 'icons/mob/augmentation/augments.dmi'
@@ -186,14 +187,15 @@
 #define NUTRITION_LEVEL_START_MIN 500
 #define NUTRITION_LEVEL_START_MAX 900
 
-#define HYDRATION_LEVEL_START_MIN 500
-#define HYDRATION_LEVEL_START_MAX 600
+#define HYDRATION_LEVEL_START_MIN 600
+#define HYDRATION_LEVEL_START_MAX 900
 
 //Disgust levels for humans
 #define DISGUST_LEVEL_MAXEDOUT 150
 #define DISGUST_LEVEL_DISGUSTED 75
 #define DISGUST_LEVEL_VERYGROSS 50
 #define DISGUST_LEVEL_GROSS 25
+#define DISGUST_LEVEL_SLIGHTLYGROSS 10
 
 //Used as an upper limit for species that continuously gain nutriment
 #define NUTRITION_LEVEL_ALMOST_FULL 995
@@ -336,6 +338,7 @@
 #define HUNGER_FACTOR		0.15	//factor at which mob nutrition decreases
 #define ETHEREAL_CHARGE_FACTOR	0.12 //factor at which ethereal's charge decreases
 #define REAGENTS_METABOLISM 1	//How many units of reagent are consumed per tick, by default.
+#define REAGENTS_SLOW_METABOLISM 0.1 // needed to have poisons have powerful effect at low doses without making it too fast
 #define REAGENTS_EFFECT_MULTIPLIER (REAGENTS_METABOLISM / 0.4)	// By defining the effect multiplier this way, it'll exactly adjust all effects according to how they originally were with the 0.4 metabolism
 
 // Eye protection
@@ -388,3 +391,81 @@
 //defense intents
 #define INTENT_DODGE 1
 #define INTENT_PARRY 2
+
+//skin tones defines
+
+//DWARF SKIN TONES
+#define SKIN_COLOR_PLATINUM "ffe0d1"
+#define SKIN_COLOR_AURUM "fcccb3"
+#define SKIN_COLOR_QUICKSILVER "edc6b3"
+#define SKIN_COLOR_BRASS "e2b9a3"
+#define SKIN_COLOR_IRON "d9a284"
+#define SKIN_COLOR_MALACHITE "c69b83"
+#define SKIN_COLOR_OBSIDIAN "3b2e27"
+#define SKIN_COLOR_BRIMSTONE "271f1a"
+#define SKIN_COLOR_CERARGYRITE "74708b"
+
+//DARK ELF SKIN TONES
+#define SKIN_COLOR_MAGGOT "9796a9"
+#define SKIN_COLOR_COCOON "897489"
+#define SKIN_COLOR_ASHEN "938f9c"
+#define SKIN_COLOR_SPIDER_VENOM "737373"
+#define SKIN_COLOR_JACKPOISON "6a616d"
+#define SKIN_COLOR_HOMUNCULUS "5f5f70"
+#define SKIN_COLOR_ARACHNID_ICHOR "2F2F38"
+
+//ELF SKIN TONES
+#define SKIN_COLOR_SNOW_ELF "fff0e9"
+#define SKIN_COLOR_PLAIN_ELF "fcccb3"
+#define SKIN_COLOR_MOUNTAIN_ELF "edc6b3"
+#define SKIN_COLOR_COASTAL_ELF "e2b9a3"
+#define SKIN_COLOR_WOOD_ELF "c9a893"
+#define SKIN_COLOR_SEA_ELF "ba9882"
+#define SKIN_COLOR_SAND_ELF "5d4c41"
+
+//HUMEN SKIN TONES
+#define SKIN_COLOR_ICECAP "fff0e9"
+#define SKIN_COLOR_ARCTIC "ffe0d1"
+#define SKIN_COLOR_TUNDRA "fcccb3"
+#define SKIN_COLOR_CONTINENTAL "edc6b3"
+#define SKIN_COLOR_TEMPERATE "e2b9a3"
+#define SKIN_COLOR_COASTAL "d9a284"
+#define SKIN_COLOR_SUBTROPICAL "c9a893"
+#define SKIN_COLOR_TROPICALDRY "ba9882"
+#define SKIN_COLOR_TROPICALWET "ac8369"
+#define SKIN_COLOR_DESERT "9c6f52"
+#define SKIN_COLOR_CRIMSONLANDS "4e3729"
+
+//AASIMAR SKIN TONES
+#define SKIN_COLOR_PLANETAR "ffd859"
+#define SKIN_COLOR_DEVA "b6f1f2"
+#define SKIN_COLOR_SOLAR "daeaeb"
+#define SKIN_COLOR_EMPYREA "a9ded1"
+#define SKIN_COLOR_GAEIA "db874f"
+#define SKIN_COLOR_CELESTIAL "e1c565"
+#define SKIN_COLOR_OLYMPIA "c7f9cc"
+#define SKIN_COLOR_NECRAL "23130c"
+#define SKIN_COLOR_ABYSSAL "22577a"
+
+//HALF ELF SKIN TONES
+#define SKIN_COLOR_TIMBER_GRONN "ffe0d1"
+#define SKIN_COLOR_SOLAR_HUE "fcccb3"
+#define SKIN_COLOR_WALNUT_STINE "edc6b3"
+#define SKIN_COLOR_AMBER_STAINED "e2b9a3"
+#define SKIN_COLOR_EBON_BORN "5a4a41"
+
+//TIEFLING SKIN TONES
+#define SKIN_COLOR_CRIMSON_LAND "cd2042"
+#define SKIN_COLOR_ZANGUINE "862E3F"
+#define SKIN_COLOR_SUNSTAINED "99401B"
+#define SKIN_COLOR_SUNDERED "D25E31"
+#define SKIN_COLOUR_ARCANA "702845"
+#define SKIN_COLOUR_ZARCONUM "BA6A92"
+#define SKIN_COLOUR_ABYSS "41577C"
+#define SKIN_COLOUR_ASH "A0AFC9"
+#define SKIN_COLOR_CASTILLIAN	"cc5757"
+#define SKIN_COLOR_ASTURIAS	"a23737"
+#define SKIN_COLOR_VAQUERO	"a74a4a"
+
+//SPECIAL SKIN TONES
+#define SKIN_COLOR_ROT "878f79"

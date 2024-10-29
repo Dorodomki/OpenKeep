@@ -69,22 +69,15 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	if(method in list(TOUCH, VAPOR, PATCH))
 		M.adjust_fire_stacks(reac_volume / 15)
 
-		if(iscarbon(M))
-			var/mob/living/carbon/C = M
-			var/power_multiplier = boozepwr / 65 // Weak alcohol has less sterilizing power
-
-			for(var/s in C.surgeries)
-				var/datum/surgery/S = s
-				S.speed_modifier = max(0.1*power_multiplier, S.speed_modifier)
 	return ..()
 
 /datum/reagent/consumable/ethanol/beer
 	name = "Beer"
 	description = ""
-	color = "#8e6c06" // rgb: 102, 67, 0
+	color = "#a17c10" // rgb: 102, 67, 0
 	nutriment_factor = 0.1
 	boozepwr = 25
-	taste_description = "beer"
+	taste_description = "ale"
 	glass_name = "glass of beer"
 	glass_desc = ""
 	hydration_factor = 10
@@ -94,7 +87,7 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	boozepwr = 40
 	taste_description = "cider"
 	glass_name = "glass of cider"
-	color = "#d3c905"
+	color = "#6aa945"
 
 /datum/reagent/consumable/ethanol/beer/wine
 	name = "Wine"
@@ -516,7 +509,7 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	glass_desc = ""
 
 /datum/reagent/consumable/ethanol/screwdrivercocktail/on_mob_life(mob/living/carbon/M)
-	if(M.mind && M.mind.assigned_role in list("Station Engineer", "Atmospheric Technician", "Chief Engineer")) //Engineers lose radiation poisoning at a massive rate.
+	if(M.mind && (M.mind.assigned_role in list("Station Engineer", "Atmospheric Technician", "Chief Engineer"))) //Engineers lose radiation poisoning at a massive rate.
 		M.radiation = max(M.radiation - 25, 0)
 	return ..()
 
@@ -2151,10 +2144,16 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	color = "#BBB525"
 
 /datum/reagent/consumable/ethanol/beer/blackgoat
-	name = "Black Goat Kriek"
+	name = "Black Gote Kriek"
 	boozepwr = 25
 	taste_description = "overwhelming sourness"
 	color = "#401806"
+
+/datum/reagent/consumable/ethanol/beer/onion
+	name = "Royal Onion Cognac"
+	boozepwr = 10
+	taste_description = "spicy sweet malty overtones"
+	color = "#683e00"
 
 // Elf Production - LEAF-LOVERS MOTHERFUCKER
 
@@ -2163,6 +2162,12 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	boozepwr = 5
 	taste_description = "subtle herbacious undertones"
 	color = "#5D8A8A"
+
+/datum/reagent/consumable/ethanol/beer/fireleaf // cabbbage
+	name = "Fireleaf"
+	boozepwr = 2
+	taste_description = "bland liquor"
+	color = "#475e45"
 
 // Dwarven Production - Best in the Realms
 
@@ -2178,6 +2183,12 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	taste_description = "potent oatlike liquor"
 	color = "#5D8A8A"
 
+/datum/reagent/consumable/ethanol/beer/voddena // Not vodka. Trust me.
+	name = "Voddena"
+	boozepwr = 55  // holy shit
+	taste_description = "burning starchy wet dirt"
+	color = "#a1a1a1"
+
 // WINE - Fancy.. And yes: all drinks are beer, technically. Cope. Seethe. I didnt code it like this.
 
 // Humen Production - Grape Based
@@ -2186,7 +2197,7 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	name = "Sour Wine"
 	boozepwr = 20
 	taste_description = "sour wine"
-	color = "#583650"
+	color = "#552b4b"
 
 /datum/reagent/consumable/ethanol/beer/whitewine
 	name = "White Wine"
@@ -2198,13 +2209,13 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	name = "Red Wine"
 	boozepwr = 30
 	taste_description = "tannin-stricken wine"
-	color = "#4A1111"
+	color = "#571111"
 
 /datum/reagent/consumable/ethanol/beer/jackberrywine
 	name = "Jackberry Wine"
 	boozepwr = 15
 	taste_description = "sickly sweet young wine"
-	color = "#3F2D45"
+	color = "#3b2342"
 
 
 // Elf Production - Berries & Herbal

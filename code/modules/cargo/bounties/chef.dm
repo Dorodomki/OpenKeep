@@ -18,13 +18,6 @@
 	required_count = 3
 	wanted_types = list(/obj/item/reagent_containers/food/snacks/popcorn)
 
-/datum/bounty/item/chef/onionrings
-	name = "Onion Rings"
-	description = "Nanotrasen is remembering Saturn day. Ship onion rings to show the station's support."
-	reward = 3000
-	required_count = 3
-	wanted_types = list(/obj/item/reagent_containers/food/snacks/onionrings)
-
 /datum/bounty/item/chef/icecreamsandwich
 	name = "Ice Cream Sandwiches"
 	description = "Upper management has been screaming non-stop for ice cream. Please send some."
@@ -36,7 +29,7 @@
 	name = "Bread"
 	description = "Problems with central planning have led to bread prices skyrocketing. Ship some bread to ease tensions."
 	reward = 1000
-	wanted_types = list(/obj/item/reagent_containers/food/snacks/store/bread, /obj/item/reagent_containers/food/snacks/breadslice, /obj/item/reagent_containers/food/snacks/bun, /obj/item/reagent_containers/food/snacks/pizzabread, /obj/item/reagent_containers/food/snacks/rawpastrybase)
+	wanted_types = list(/obj/item/reagent_containers/food/snacks/store/bread, /obj/item/reagent_containers/food/snacks/breadslice, /obj/item/reagent_containers/food/snacks/bun, /obj/item/reagent_containers/food/snacks/pizzabread)
 
 /datum/bounty/item/chef/pie
 	name = "Pie"

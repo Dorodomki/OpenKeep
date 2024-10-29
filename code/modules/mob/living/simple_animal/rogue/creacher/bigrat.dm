@@ -1,47 +1,54 @@
 /mob/living/simple_animal/hostile/retaliate/rogue/bigrat
 	icon = 'icons/roguetown/mob/monster/bigrat.dmi'
 	name = "rous"
+	desc = "A Rodent Of Unusual Size. Some suspect the malice of the Cursed Star causes them to mutate."
 	icon_state = "rat"
 	icon_living = "rat"
 	icon_dead = "rat1"
-	gender = MALE
-	emote_hear = list("squeaks.")
-	emote_see = list("cleans its nose.")
-	speak_chance = 1
-	turns_per_move = 3
-	see_in_dark = 6
-	move_to_delay = 5
 	pixel_x = -16
 	pixel_y = -8
+
+	faction = list("rats")
+	emote_hear = list("squeaks.")
+	emote_see = list("cleans its nose.")
+	turns_per_move = 3
+	move_to_delay = 5
 	vision_range = 2
 	aggro_vision_range = 2
+
+	botched_butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/mince = 1)
+	butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/mince = 1,
+						/obj/item/natural/fur/rous = 1)
+	perfect_butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 1,
+						/obj/item/alch/sinew = 1,
+						/obj/item/natural/fur/rous = 1)
+
+	health = ROUS_HEALTH
+	maxHealth = ROUS_HEALTH
+	food_type = list(/obj/item/reagent_containers/food/snacks,
+					/obj/item/bodypart,
+					/obj/item/organ)
+
 	base_intents = list(/datum/intent/simple/bite)
-	butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/mince = 1)
-	faction = list("rats")
-	mob_biotypes = MOB_ORGANIC|MOB_BEAST
 	attack_sound = 'sound/combat/wooshes/punch/punchwoosh (2).ogg'
-	health = 35
-	maxHealth = 35
 	melee_damage_lower = 12
 	melee_damage_upper = 14
-	environment_smash = ENVIRONMENT_SMASH_NONE
-	retreat_distance = 0
-	minimum_distance = 0
-	milkies = FALSE
-	food_type = list(/obj/item/reagent_containers/food/snacks, /obj/item/bodypart, /obj/item/organ)
-	footstep_type = FOOTSTEP_MOB_BAREFOOT
-	pooptype = null
+
 	STACON = 3
 	STASTR = 3
 	STASPD = 6
+
+	retreat_distance = 0
+	minimum_distance = 0
 	deaggroprob = 0
 	defprob = 40
 	defdrain = 5
-	attack_same = 1
+	attack_same = FALSE // Lets two share a room.
 	retreat_health = 0.3
-	aggressive = 1
+	aggressive = TRUE
 	stat_attack = UNCONSCIOUS
 	remains_type = /obj/effect/decal/remains/bigrat
+	body_eater = TRUE
 
 /obj/effect/decal/remains/bigrat
 	name = "remains"
@@ -52,7 +59,7 @@
 	pixel_y = -8
 
 /mob/living/simple_animal/hostile/retaliate/rogue/bigrat/Initialize()
-	..()
+	. = ..()
 	gender = MALE
 	if(prob(33))
 		gender = FEMALE
@@ -61,12 +68,6 @@
 		icon_living = "Frat"
 		icon_dead = "Frat1"
 	update_icon()
-
-/mob/living/simple_animal/hostile/retaliate/rogue/bigrat/find_food()
-	. = ..()
-	if(!.)
-		return eat_bodies()
-
 
 /mob/living/simple_animal/hostile/retaliate/rogue/bigrat/death(gibbed)
 	..()
@@ -117,7 +118,7 @@
 			return "nose"
 		if(BODY_ZONE_PRECISE_MOUTH)
 			return "mouth"
-		if(BODY_ZONE_PRECISE_HAIR)
+		if(BODY_ZONE_PRECISE_SKULL)
 			return "head"
 		if(BODY_ZONE_PRECISE_EARS)
 			return "head"

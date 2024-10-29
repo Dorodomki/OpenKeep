@@ -2,6 +2,7 @@
 /datum/antagonist/prisoner
 	name = "Prisoner"
 	increase_votepwr = FALSE
+	isgoodguy = TRUE
 
 /datum/antagonist/prisoner/on_gain()
 	if(!(locate(/datum/objective/escape) in objectives))
@@ -9,7 +10,7 @@
 		escape_objective.owner = owner
 		objectives += escape_objective
 		return
-//	ADD_TRAIT(owner.current, RTRAIT_ANTAG, TRAIT_GENERIC)
+//	ADD_TRAIT(owner.current, TRAIT_ANTAG, TRAIT_GENERIC)
 	return ..()
 
 /datum/antagonist/prisoner/on_removal()

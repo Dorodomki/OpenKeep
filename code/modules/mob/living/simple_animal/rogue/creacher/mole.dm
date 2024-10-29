@@ -1,51 +1,77 @@
 /mob/living/simple_animal/hostile/retaliate/rogue/mole
 	icon = 'icons/roguetown/mob/monster/mole.dmi'
-	name = "Lesser Brown Mole"
+	name = "lesser brown mole"
+	desc = "Usually lurking underground, they sometimes grow to impossible sizes and come to the surface to satiate a strange, newfound hunger for flesh."
 	icon_state = "mole"
 	icon_living = "mole"
 	icon_dead = "mole_dead"
-	gender = MALE
+
+	faction = list("orcs")
 	emote_hear = null
 	emote_see = null
-	speak_chance = 1
 	turns_per_move = 2
-	see_in_dark = 6
 	move_to_delay = 5
-	base_intents = list(/datum/intent/simple/claw)
-	butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 2,
-						/obj/item/natural/hide = 1,
-						/obj/item/natural/fur = 1)
-	faction = list("orcs")
-	mob_biotypes = MOB_ORGANIC|MOB_BEAST
-	health = 300
-	maxHealth = 300
-	melee_damage_lower = 30
-	melee_damage_upper = 40
 	vision_range = 7
 	aggro_vision_range = 9
-	environment_smash = ENVIRONMENT_SMASH_NONE
+
+	botched_butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 1,
+						/obj/item/natural/hide = 1,
+						/obj/item/natural/fur/mole = 1,
+						/obj/item/alch/sinew = 1,
+						/obj/item/alch/bone = 1)
+	butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 2,
+						/obj/item/natural/hide = 2,
+						/obj/item/natural/fur/mole = 2,
+						/obj/item/alch/sinew = 2,
+						/obj/item/alch/bone = 1)
+	perfect_butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 3,
+						/obj/item/natural/hide = 2,
+						/obj/item/natural/fur/mole = 3,
+						/obj/item/alch/sinew = 2,
+						/obj/item/alch/bone = 1)
+
+	health = MOLE_HEALTH
+	maxHealth = MOLE_HEALTH
+	food_type = list(/obj/item/reagent_containers/food/snacks/rogue/meat,
+					/obj/item/bodypart,
+					/obj/item/organ)
+
+	base_intents = list(/datum/intent/simple/claw)
+	attack_sound = list('sound/vo/mobs/saiga/attack (1).ogg','sound/vo/mobs/saiga/attack (2).ogg')
+	melee_damage_lower = 20
+	melee_damage_upper = 40
+
+	STACON = 8
+	STASTR = 12
+	STASPD = 3
+	STAEND = 10
+
 	retreat_distance = 0
 	minimum_distance = 0
-	milkies = FALSE
-	food_type = list(/obj/item/reagent_containers/food/snacks/rogue/meat, /obj/item/bodypart, /obj/item/organ)
-	footstep_type = FOOTSTEP_MOB_BAREFOOT
-	pooptype = null
-	STACON = 9
-	STASTR = 13
-	STASPD = 5
-	STAEND = 12
 	deaggroprob = 0
 	defprob = 30
 	defdrain = 10
 	del_on_deaggro = 99 SECONDS
 	retreat_health = 0.4
 	food = 0
-	attack_sound = list('sound/vo/mobs/saiga/attack (1).ogg','sound/vo/mobs/saiga/attack (2).ogg')
+
 	dodgetime = 20
-	aggressive = 1
+	aggressive = TRUE
 //	stat_attack = UNCONSCIOUS
 	remains_type = /obj/effect/decal/remains/mole
-
+	body_eater = TRUE
+/*
+/mob/living/simple_animal/hostile/retaliate/rogue/mole/greater
+	name = "Greater Brown Mole"
+	desc = "Holy Moley"
+	health = 400
+	maxHealth = 400
+	butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 4,
+						/obj/item/natural/hide = 3,
+						/obj/item/natural/fur/mole = 2)
+	melee_damage_lower = 50
+	melee_damage_upper = 60
+*/
 /obj/effect/decal/remains/mole
 	name = "remains"
 	gender = PLURAL
@@ -88,11 +114,6 @@
 		Retaliate()
 		GiveTarget(pulledby)
 
-/mob/living/simple_animal/hostile/retaliate/rogue/mole/find_food()
-	. = ..()
-	if(!.)
-		return eat_bodies()
-
 /mob/living/simple_animal/hostile/retaliate/rogue/mole/simple_limb_hit(zone)
 	if(!zone)
 		return ""
@@ -105,7 +126,7 @@
 			return "nose"
 		if(BODY_ZONE_PRECISE_MOUTH)
 			return "mouth"
-		if(BODY_ZONE_PRECISE_HAIR)
+		if(BODY_ZONE_PRECISE_SKULL)
 			return "head"
 		if(BODY_ZONE_PRECISE_EARS)
 			return "head"

@@ -1,13 +1,14 @@
 /datum/advclass/combat/heartfeltlord
 	name = "Lord of Heartfelt"
-	tutorial = "You are the proud lord of heartfelt \
-	but why did you come to the isle of enigma?"
-	allowed_sexes = list("male")
+	tutorial = "You are the proud lord of Heartfelt, \
+	but why have you come to Rockhill?"
+	allowed_sexes = list(MALE)
 	allowed_races = list("Humen")
 	outfit = /datum/outfit/job/roguetown/adventurer/heartfeltlord
-	maxchosen = 1
-	plevel_req = 2
-	israre = TRUE
+	min_pq = 2
+	maximum_possible_slots = 1
+	pickprob = 50
+	category_tags = list(CTAG_ADVENTURER)
 
 /datum/outfit/job/roguetown/adventurer/heartfeltlord/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -18,14 +19,13 @@
 	shoes = /obj/item/clothing/shoes/roguetown/nobleboot
 	pants = /obj/item/clothing/under/roguetown/tights/black
 	cloak = /obj/item/clothing/cloak/heartfelt
-	armor = /obj/item/clothing/suit/roguetown/armor/heartfelt/lord
+	armor = /obj/item/clothing/suit/roguetown/armor/medium/surcoat/heartfelt
 	beltr = /obj/item/storage/belt/rogue/pouch/coins/rich
 	beltl = /obj/item/scomstone
 	gloves = /obj/item/clothing/gloves/roguetown/leather/black
 	neck = /obj/item/clothing/neck/roguetown/chaincoif
 	beltl = /obj/item/rogueweapon/sword/long/marlin
 	if(H.mind)
-		H.virginity = TRUE
 		H.mind.adjust_skillrank(/datum/skill/combat/axesmaces, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/crossbows, 3, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/wrestling, 3, TRUE)
@@ -45,6 +45,5 @@
 		H.change_stat("perception", 2)
 		H.change_stat("fortune", 5)
 
-	ADD_TRAIT(H, RTRAIT_NOBLE, TRAIT_GENERIC)
-	ADD_TRAIT(H, RTRAIT_NOSEGRAB, TRAIT_GENERIC)
-	ADD_TRAIT(H, RTRAIT_HEAVYARMOR, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)

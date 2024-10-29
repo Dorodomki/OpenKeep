@@ -87,7 +87,7 @@
 						M.visible_message("<span class='notice'>[M] directs [src] to [M.p_their()] eyes.</span>", "<span class='notice'>I wave the light in front of your eyes.</span>")
 				else
 					user.visible_message("<span class='warning'>[user] directs [src] to [M]'s eyes.</span>", \
-										 "<span class='danger'>I direct [src] to [M]'s eyes.</span>")
+										"<span class='danger'>I direct [src] to [M]'s eyes.</span>")
 					if(M.stat == DEAD || (HAS_TRAIT(M, TRAIT_BLIND)) || !M.flash_act(visual = 1)) //mob is dead or fully blind
 						to_chat(user, "<span class='warning'>[M]'s pupils don't react to the light!</span>")
 					else if(M.dna && M.dna.check_mutation(XRAY))	//mob has X-ray vision
@@ -152,7 +152,7 @@
 
 				else
 					user.visible_message("<span class='notice'>[user] directs [src] to [M]'s mouth.</span>",\
-										 "<span class='notice'>I direct [src] to [M]'s mouth.</span>")
+										"<span class='notice'>I direct [src] to [M]'s mouth.</span>")
 					if(organ_count)
 						to_chat(user, "<span class='notice'>Inside [their] mouth [organ_count > 1 ? "are" : "is"] [organ_list].</span>")
 					else
@@ -337,7 +337,7 @@
 	slot_flags = ITEM_SLOT_HIP
 	var/datum/looping_sound/torchloop/soundloop
 	var/should_self_destruct = TRUE //added for torch burnout
-	max_integrity = 20
+	max_integrity = 40
 	fuel = 30 MINUTES
 	light_depth = 0
 	light_height = 0
@@ -400,12 +400,14 @@
 		var/mob/M = loc
 		M.update_inv_hands()
 		M.update_inv_belt()
+	damtype = BRUTE
 
 /obj/item/flashlight/flare/torch/fire_act(added, maxstacks)
 	if(fuel)
 		if(!on)
 			playsound(src.loc, 'sound/items/firelight.ogg', 100)
 			on = TRUE
+			damtype = BURN
 			update_brightness()
 			force = on_damage
 			soundloop.start()
@@ -416,23 +418,32 @@
 	..()
 
 /obj/item/flashlight/flare/torch/afterattack(atom/movable/A, mob/user, proximity)
-    . = ..()
-    if (!proximity)
-        return
-    if (on && (prob(50) || (user.used_intent.type == /datum/intent/use)))
-        if (ismob(A))
-            A.spark_act()
-        else
-            A.fire_act(3,3)
+	. = ..()
+	if (!proximity)
+		return
+	if (on && (prob(50) || (user.used_intent.type == /datum/intent/use)))
+		if (ismob(A))
+			A.spark_act()
+		else
+			A.fire_act(3,3)
 
-        if (should_self_destruct)  // check if self-destruct
-            times_used += 1
-            if (times_used >= 6) //amount used before burning out
-                user.visible_message("<span class='warning'>[src] has burnt out and falls apart!</span>")
-                qdel(src)
+		if (should_self_destruct)  // check if self-destruct
+			times_used += 1
+			if (times_used >= 8) //amount used before burning out
+				user.visible_message("<span class='warning'>[src] has burnt out and falls apart!</span>")
+				qdel(src)
 
 /obj/item/flashlight/flare/torch/spark_act()
 	fire_act()
+
+/obj/item/flashlight/flare/torch/get_temperature()
+	if(on)
+		return FIRE_MINIMUM_TEMPERATURE_TO_SPREAD
+	return ..()
+
+/obj/item/flashlight/flare/torch/prelit/Initialize() //Prelit version, testing to see if it causes less issues with pre_equip dropping stuff in your hands
+	. = ..()
+	spark_act()
 
 /obj/item/flashlight/flare/torch/metal
 	name = "torch"
@@ -443,25 +454,25 @@
 	should_self_destruct = TRUE
 
 /obj/item/flashlight/flare/torch/metal/afterattack(atom/movable/A, mob/user, proximity)
-    . = ..()
-    if(!proximity)
-        return
-    if(on && (prob(50) || (user.used_intent.type == /datum/intent/use)))
-        if(ismob(A))
-            A.spark_act()
-        else
-            A.fire_act(3,3)
+	. = ..()
+	if(!proximity)
+		return
+	if(on && (prob(50) || (user.used_intent.type == /datum/intent/use)))
+		if(ismob(A))
+			A.spark_act()
+		else
+			A.fire_act(3,3)
 
-        if (should_self_destruct)  // check if self-destruct
-            times_used += 1
-            if (times_used >= 13) //amount used before burning out
-                user.visible_message("<span class='warning'>[src] has burnt out and falls apart!</span>")
-                qdel(src)
+		if (should_self_destruct)  // check if self-destruct
+			times_used += 1
+			if (times_used >= 13) //amount used before burning out
+				user.visible_message("<span class='warning'>[src] has burnt out and falls apart!</span>")
+				qdel(src)
 
 /obj/item/flashlight/flare/torch/lantern
 	name = "lamptern"
 	icon_state = "lamp"
-	desc = ""
+	desc = "A light to guide the way."
 	brightness_on = 7
 	on = FALSE
 	flags_1 = CONDUCT_1
@@ -472,14 +483,14 @@
 	should_self_destruct = FALSE
 
 /obj/item/flashlight/flare/torch/lantern/afterattack(atom/movable/A, mob/user, proximity)
-    . = ..()
-    if(!proximity)
-        return
-    if(on && (prob(50) || (user.used_intent.type == /datum/intent/use)))
-        if(ismob(A))
-            A.spark_act()
-        else
-            A.fire_act(3,3)
+	. = ..()
+	if(!proximity)
+		return
+	if(on && (prob(50) || (user.used_intent.type == /datum/intent/use)))
+		if(ismob(A))
+			A.spark_act()
+		else
+			A.fire_act(3,3)
 
 /obj/item/flashlight/flare/torch/lantern/process()
 	open_flame(heat)
@@ -492,6 +503,28 @@
 	return
 
 /obj/item/flashlight/flare/torch/lantern/getonmobprop(tag)
+	. = ..()
+	if(tag)
+		switch(tag)
+			if("gen")
+				return list("shrink" = 0.4,"sx" = -2,"sy" = -4,"nx" = 9,"ny" = -4,"wx" = -3,"wy" = -4,"ex" = 2,"ey" = -4,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0)
+			if("onbelt")
+				return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
+
+/obj/item/flashlight/flare/torch/lantern/copper
+	name = "copper lamptern"
+	icon_state = "clamp"
+	desc = "A simple and cheap lamptern."
+	brightness_on = 7
+	on = FALSE
+	flags_1 = CONDUCT_1
+	slot_flags = ITEM_SLOT_HIP
+	force = 1
+	on_damage = 5
+	fuel = 120 MINUTES
+	should_self_destruct = FALSE
+
+/obj/item/flashlight/flare/torch/lantern/copper/getonmobprop(tag)
 	. = ..()
 	if(tag)
 		switch(tag)
@@ -558,7 +591,7 @@
 	return TRUE
 
 /obj/item/flashlight/emp/attack(mob/living/M, mob/living/user)
-	if(on && user.zone_selected in list(BODY_ZONE_PRECISE_R_EYE, BODY_ZONE_PRECISE_MOUTH)) // call original attack when examining organs
+	if(on && (user.zone_selected in list(BODY_ZONE_PRECISE_R_EYE, BODY_ZONE_PRECISE_MOUTH))) // call original attack when examining organs
 		..()
 	return
 

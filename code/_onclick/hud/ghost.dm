@@ -41,9 +41,23 @@
 			if(G.client.holder)
 				if(istype(G, /mob/dead/observer/rogue/arcaneeye))
 					return
+				if(istype(G, /mob/dead/observer/profane)) // Souls trapped by a dagger can return to lobby if they want, at the cost of a triumph.
+					if(alert("Return to the lobby? This will cost a triumph!", "", "Yes", "No") == "Yes")
+						G.returntolobby()
+						G.adjust_triumphs(-1)
 				if(alert("Travel with the boatman?", "", "Yes", "No") == "Yes")
-					for(var/obj/effect/landmark/underworld/A in world)
-						var/mob/living/carbon/spirit/O = new /mob/living/carbon/spirit(A.loc)
+
+					// Check if the player's job is hiv+
+					var/datum/job/target_job = SSjob.GetJob(G.mind.assigned_role)
+					if(target_job)
+						if(target_job.job_reopens_slots_on_death)
+							target_job.current_positions = max(0, target_job.current_positions - 1)
+						if(target_job.same_job_respawn_delay)
+							// Store the current time for the player
+							GLOB.job_respawn_delays[G.ckey] = world.time + target_job.same_job_respawn_delay
+
+					for(var/turf/spawn_loc in GLOB.underworldcoinspawns)
+						var/mob/living/carbon/spirit/O = new /mob/living/carbon/spirit(spawn_loc)
 						O.livingname = G.name
 						O.ckey = G.ckey
 						SSdroning.area_entered(get_area(O), O.client)
@@ -56,8 +70,8 @@
 			if(C.skeletons)
 				G.returntolobby()
 		if(alert("Travel with the boatman?", "", "Yes", "No") == "Yes")
-			for(var/obj/effect/landmark/underworld/A in world)
-				var/mob/living/carbon/spirit/O = new /mob/living/carbon/spirit(A.loc)
+			for(var/turf/spawn_loc in GLOB.underworldcoinspawns)
+				var/mob/living/carbon/spirit/O = new /mob/living/carbon/spirit(spawn_loc)
 				O.livingname = G.name
 				O.ckey = G.ckey
 				SSdroning.area_entered(get_area(O), O.client)

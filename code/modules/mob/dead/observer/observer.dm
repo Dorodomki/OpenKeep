@@ -103,7 +103,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 			if(O.density && !O.climbable)
 				if(!misting)
 					return
-		for(var/obj/item/reagent_containers/powder/flour/salt/S in T)
+		for(var/obj/item/reagent_containers/powder/salt/S in T)
 //			go2hell()
 //			next_gmove = world.time + 30
 			return
@@ -118,7 +118,12 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 /mob/dead/observer/screye/Move(n, direct)
 	return
 
+/mob/dead/observer/profane // Ghost type for souls trapped by the profane dagger. They can't move, but can talk to the dagger's wielder and other trapped souls.
+	sight = 0
+	see_invisible = SEE_INVISIBLE_OBSERVER
 
+/mob/dead/observer/profane/Move(n, direct)
+	return
 
 /mob/dead/observer/Initialize()
 	set_invisibility(GLOB.observer_default_invisibility)
@@ -898,7 +903,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return
 	var/bt = world.time
 	SEND_SOUND(src, sound('sound/misc/notice (2).ogg'))
-	if(alert(src, "A lich has summoned you to destroy ROGUETOWN!", "Join the Horde", "Yes", "No") == "Yes")
+	if(alert(src, "A lich has summoned you to destroy Rockhill!", "Join the Horde", "Yes", "No") == "Yes")
 		if(world.time > bt + 5 MINUTES)
 			to_chat(src, "<span class='warning'>Too late.</span>")
 			return FALSE

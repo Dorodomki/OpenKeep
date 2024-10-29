@@ -1,13 +1,14 @@
 /datum/advclass/combat/heartfelthand
 	name = "Hand of Heartfelt"
-	tutorial = "You serve your lord as the royal hand, taking care of all diplomatic actions in your relm. \
-	maybe one day you will become lord too."
-	allowed_sexes = list("male")
+	tutorial = "You serve your lord as hand, taking care of diplomatic actions within your realm, \
+	but why have you come to Rockhill?"
+	allowed_sexes = list(MALE)
 	allowed_races = list("Humen")
 	outfit = /datum/outfit/job/roguetown/adventurer/heartfelthand
-	maxchosen = 1
-	plevel_req = 2
-	israre = TRUE
+	maximum_possible_slots = 1
+	min_pq = 1
+	pickprob = 50
+	category_tags = list(CTAG_ADVENTURER)
 
 /datum/outfit/job/roguetown/adventurer/heartfelthand/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -16,7 +17,7 @@
 	shoes = /obj/item/clothing/shoes/roguetown/nobleboot
 	pants = /obj/item/clothing/under/roguetown/tights/black
 	neck = /obj/item/clothing/neck/roguetown/gorget
-	armor = /obj/item/clothing/suit/roguetown/armor/heartfelt/hand
+	armor = /obj/item/clothing/suit/roguetown/armor/medium/surcoat/heartfelt/hand
 	beltr = /obj/item/storage/belt/rogue/pouch/coins/rich
 	gloves = /obj/item/clothing/gloves/roguetown/leather/black
 	beltl = /obj/item/rogueweapon/sword/decorated
@@ -33,10 +34,10 @@
 		H.mind.adjust_skillrank(/datum/skill/craft/crafting, 1, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/reading, 3, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/swimming, 2, TRUE)
-		H.mind.adjust_skillrank(/datum/skill/misc/climbing, 4, TRUE)
+		H.mind.adjust_skillrank(/datum/skill/misc/climbing, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/craft/cooking, 1, TRUE)
 		H.change_stat("strength", 3)
 		H.change_stat("perception", 2)
 		H.change_stat("intelligence", 3)
-	ADD_TRAIT(H, RTRAIT_SEEPRICES, type)
-	ADD_TRAIT(H, RTRAIT_HEAVYARMOR, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_SEEPRICES, type)
+	ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)

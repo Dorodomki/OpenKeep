@@ -1,7 +1,7 @@
 /*
- FUN ZONE OF ADMIN LISTINGS
- Try to keep this in sync with __DEFINES/traits.dm
- quirks have it's own panel so we don't need them here.
+FUN ZONE OF ADMIN LISTINGS
+Try to keep this in sync with __DEFINES/traits.dm
+quirks have it's own panel so we don't need them here.
 */
 GLOBAL_LIST_INIT(traits_by_type, list(
 	/mob = list(
@@ -87,7 +87,7 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"TRAIT_OIL_FRIED" = TRAIT_OIL_FRIED,
 		"TRAIT_XENO_IMMUNE" = TRAIT_XENO_IMMUNE,
 		"TRAIT_DRUQK" = TRAIT_DRUQK,
-		"RTRAIT_SEEPRICES" = RTRAIT_SEEPRICES
+		"TRAIT_SEEPRICES" = TRAIT_SEEPRICES
 	),
 	/obj/item/bodypart = list(
 		"TRAIT_PARALYSIS" = TRAIT_PARALYSIS

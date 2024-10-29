@@ -67,9 +67,9 @@
 
 	//allowed sex/race for picking
 	var/list/allowed_sexes = list(MALE,FEMALE)
-	var/list/allowed_races = ALL_RACES_LIST_NAMES
-	var/list/allowed_patrons = ALL_PATRON_NAMES_LIST
-	var/list/allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD)
+	var/list/allowed_races
+	var/list/allowed_patrons
+	var/list/allowed_ages = ALL_AGES_LIST
 
 	/// Innate skill levels unlocked at roundstart. Format is list(/datum/skill/foo = SKILL_EXP_NOVICE) with exp as an integer or as per code/_DEFINES/skills.dm
 	var/list/skills
@@ -81,6 +81,7 @@
 
 	var/f_title = null
 
+	var/job_greet_text = TRUE
 	var/tutorial = null
 
 	var/whitelist_req = FALSE
@@ -100,9 +101,42 @@
 
 	var/can_random = TRUE
 
+	/// Some jobs have unique combat mode music, because why not?
+	var/cmode_music
+
+	/// This job always shows on latechoices
+	var/always_show_on_latechoices = FALSE
+
+	/// This job has a cooldown if you died in it and attempt to rejoin as it
+	var/same_job_respawn_delay = FALSE
+
+	/// This job re-opens slots if someone dies as it
+	var/job_reopens_slots_on_death = FALSE
+
+/*
+	How this works, its CTAG_DEFINE = amount_to_attempt_to_role
+	EX: advclass_cat_rolls = list(CTAG_PILGRIM = 5, CTAG_ADVENTURER = 5)
+	You will still need to contact the subsystem though
+*/
+	var/list/advclass_cat_rolls
+/*
+	Basically this is just a ref to a drifter wave if its attached to one
+	The role class handler will grab relevant data out of it it uses a class select
+	Just make sure to unattach afterward we are done.
+*/
+	var/datum/drifter_wave/drifter_wave_attachment
+
 
 /datum/job/proc/special_job_check(mob/dead/new_player/player)
 	return TRUE
+
+/datum/job/proc/greet(mob/player)
+	if(!job_greet_text)
+		return
+	to_chat(player, span_notice("You are the <b>[title]</b>"))
+	if(tutorial)
+		to_chat(player, span_notice("*-----------------*"))
+		to_chat(player, span_notice(tutorial))
 
 //Only override this proc
 //H is usually a human unless an /equip override transformed it
@@ -161,14 +195,19 @@
 	if(show_in_credits)
 		SScrediticons.processing += H
 
+	if(cmode_music)
+		H.cmode_music = cmode_music
+
 /mob/living/carbon/human/proc/add_credit()
 	if(!mind || !client)
 		return
 	var/thename = "[real_name]"
 	var/datum/job/J = SSjob.GetJob(mind.assigned_role)
-	var/used_title = J.title
-	if(gender == FEMALE && J.f_title)
-		used_title = J.f_title
+	var/used_title
+	if(J)
+		used_title = J.title
+		if(gender == FEMALE && J.f_title)
+			used_title = J.f_title
 	if(used_title)
 		thename = "[real_name] the [used_title]"
 	GLOB.credits_icons[thename] = list()
@@ -331,10 +370,11 @@
 
 	var/obj/item/card/id/C = H.wear_ring
 	if(istype(C))
-		C.access = J.get_access()
+		if(J)
+			C.access = J.get_access()
+			C.assignment = J.title
 		shuffle_inplace(C.access) // Shuffle access list to make NTNet passkeys less predictable
 		C.registered_name = H.real_name
-		C.assignment = J.title
 		C.update_label()
 		for(var/A in SSeconomy.bank_accounts)
 			var/datum/bank_account/B = A
@@ -347,7 +387,8 @@
 	var/obj/item/pda/PDA = H.get_item_by_slot(pda_slot)
 	if(istype(PDA))
 		PDA.owner = H.real_name
-		PDA.ownjob = J.title
+		if(J)
+			PDA.ownjob = J.title
 		PDA.update_label()
 
 /datum/outfit/job/get_chameleon_disguise_info()
@@ -363,4 +404,3 @@
 	if(CONFIG_GET(flag/security_has_maint_access))
 		return list(ACCESS_MAINT_TUNNELS)
 	return list()
-

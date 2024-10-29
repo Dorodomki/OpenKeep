@@ -6,8 +6,15 @@
 	total_positions = 0
 	spawn_positions = 0
 
-	allowed_sexes = list("male", "female")
-	allowed_races = list("Humen","Humen", "Half-Elf","Dark Elf","Elf","Elf", "Dwarf","Dwarf")
+	allowed_sexes = list(MALE, FEMALE)
+	allowed_races = list(
+		"Humen",
+		"Elf", 
+		"Half-Elf",
+		"Dwarf",
+		"Tiefling",
+		"Dark Elf"
+	)
 	tutorial = ""
 
 	outfit = /datum/outfit/job/roguetown/deathknight
@@ -45,7 +52,7 @@
 //		H.remove_all_languages()
 		H.base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB, /datum/intent/simple/claw)
 		H.update_a_intents()
-		H.cmode_music = 'sound/music/combatbandit.ogg'
+		H.cmode_music = 'sound/music/combat_weird.ogg'
 
 		var/obj/item/organ/eyes/eyes = H.getorganslot(ORGAN_SLOT_EYES)
 		if(eyes)
@@ -63,7 +70,7 @@
 		H.name = "Death Knight"
 		H.real_name = "Death Knight"
 		ADD_TRAIT(H, TRAIT_NOMOOD, TRAIT_GENERIC)
-		ADD_TRAIT(H, TRAIT_NOFATSTAM, TRAIT_GENERIC)
+		ADD_TRAIT(H, TRAIT_NOROGSTAM, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_NOLIMBDISABLE, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_NOHUNGER, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_NOBREATH, TRAIT_GENERIC)
@@ -71,7 +78,8 @@
 		ADD_TRAIT(H, TRAIT_TOXIMMUNE, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_NOSLEEP, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_SHOCKIMMUNE, TRAIT_GENERIC)
-		ADD_TRAIT(H, RTRAIT_HEAVYARMOR, TRAIT_GENERIC)
+		ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
+		ADD_TRAIT(H, TRAIT_CRITICAL_WEAKNESS, TRAIT_GENERIC)
 
 /datum/outfit/job/roguetown/deathknight/pre_equip(mob/living/carbon/human/H)
 	..()
@@ -92,7 +100,7 @@
 	armor = /obj/item/clothing/suit/roguetown/armor/plate/blkknight/death
 	gloves = /obj/item/clothing/gloves/roguetown/plate/blk/death
 	backl = /obj/item/rogueweapon/sword/long/death
-	head = /obj/item/clothing/head/roguetown/helmet/heavy/knight/black
+	head = /obj/item/clothing/head/roguetown/helmet/visored/knight/black
 
 	H.change_stat("intelligence", 3)
 	H.change_stat("strength", 2)

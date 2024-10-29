@@ -2,7 +2,7 @@ GLOBAL_LIST_EMPTY(biggates)
 
 /obj/structure/gate
 	name = "gate"
-	desc = ""
+	desc = "A strong steel gate."
 	icon = 'icons/roguetown/misc/gate.dmi'
 	icon_state = "gate1"
 	density = TRUE
@@ -25,7 +25,7 @@ GLOBAL_LIST_EMPTY(biggates)
 
 /obj/structure/gate/preopen/Initialize()
 	. = ..()
-	open()
+	INVOKE_ASYNC(src, PROC_REF(open))
 
 /obj/structure/gate/bars
 	icon_state = "bar1"
@@ -37,7 +37,7 @@ GLOBAL_LIST_EMPTY(biggates)
 
 /obj/structure/gate/bars/preopen/Initialize()
 	. = ..()
-	open()
+	INVOKE_ASYNC(src, PROC_REF(open))
 
 /obj/gblock
 	name = ""
@@ -125,7 +125,7 @@ GLOBAL_LIST_EMPTY(biggates)
 
 /obj/structure/winch
 	name = "winch"
-	desc = ""
+	desc = "A Gatekeeper's only, and most important responsibility."
 	icon = 'icons/roguetown/misc/structure.dmi'
 	icon_state = "winch"
 	density = TRUE

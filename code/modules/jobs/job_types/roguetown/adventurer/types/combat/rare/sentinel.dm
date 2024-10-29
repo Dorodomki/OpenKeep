@@ -2,18 +2,22 @@
 
 /datum/advclass/combat/rare/sentinel
 	name = "Sentinel"
-	tutorial = "Your elvish overseers have sent you to this distant island as a forward scout for future expansion. Ensure the prosperity of your people and warden over them with justice and firm rulings. Your steed will carry you through any challenges ahead."
-	allowed_sexes = list("male", "female")
-	allowed_races = list("Elf",
-	"Half-Elf",
-	"Dark Elf")
+	tutorial = "Your overseers have sent you to this distant land as a scout. Your trusted steed, longbow, and spear will allow you to overcome any challenges on the road ahead."
+	allowed_sexes = list(MALE, FEMALE)
+	allowed_races = list(
+		"Elf",
+		"Half-Elf",
+		"Dark Elf"
+	)
 	outfit = /datum/outfit/job/roguetown/adventurer/sentinel
-	maxchosen = 1
-	israre = TRUE
-	plevel_req = 1
 	horse = /mob/living/simple_animal/hostile/retaliate/rogue/saigabuck/tame/saddled
+	outfit = /datum/outfit/job/roguetown/adventurer/sentinel
+	maximum_possible_slots = 1
+	min_pq = 0
+	pickprob = 30
+	category_tags = list(CTAG_ADVENTURER)
 
-/datum/advclass/combat/vaquero/equipme(mob/living/carbon/human/H)
+/datum/advclass/combat/sentinel/equipme(mob/living/carbon/human/H)
 	if(H.gender == FEMALE)
 		horse = /mob/living/simple_animal/hostile/retaliate/rogue/saiga/tame/saddled
 	return ..()
@@ -22,17 +26,18 @@
 /datum/outfit/job/roguetown/adventurer/sentinel/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.mind)
-		H.mind.adjust_skillrank(/datum/skill/combat/wrestling, 1, TRUE)
+		H.mind.adjust_skillrank(/datum/skill/combat/wrestling, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/unarmed, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/polearms, 3, TRUE)
+		H.mind.adjust_skillrank(/datum/skill/misc/swimming, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/climbing, 3, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/athletics, 3, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/riding, 5, TRUE)
-		H.mind.adjust_skillrank(/datum/skill/combat/bows, 5, TRUE)
+		H.mind.adjust_skillrank(/datum/skill/combat/bows, 4, TRUE)
+		H.mind.adjust_skillrank(/datum/skill/misc/medicine, 2, TRUE)
 		H.change_stat("strength", 1)
-		H.change_stat("constitution", 1)
-		H.change_stat("endurance", 1)
-		H.change_stat("perception", 4)
+		H.change_stat("perception", 2)
+		H.change_stat("speed", 1)
 
 	if(H.gender == MALE)
 		pants = /obj/item/clothing/under/roguetown/trou/leather
@@ -50,9 +55,9 @@
 	backl = /obj/item/rogueweapon/spear
 	head = /obj/item/clothing/head/roguetown/helmet/leather
 	neck = /obj/item/clothing/neck/roguetown/chaincoif
-	if(prob(23))
+	if(prob(33))
 		if(!H.has_language(/datum/language/elvish))
 			H.grant_language(/datum/language/elvish)
 			to_chat(H, "<span class='info'>I can speak Elfish with ,e before my speech.</span>")
 
-	ADD_TRAIT(H, RTRAIT_MEDIUMARMOR, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)

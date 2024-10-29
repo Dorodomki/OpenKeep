@@ -147,6 +147,8 @@
 	if(!user.hud_used.reads)
 		return
 	if(!user.can_read(src))
+		if(info)
+			user.mind.adjust_experience(/datum/skill/misc/reading, 2, FALSE)
 		return
 	if(mailer)
 		return
@@ -439,7 +441,6 @@
 		else
 			to_chat(user, "<span class='warning'>I can't write.</span>")
 			return
-		return
 
 	if(istype(P, /obj/item/paper))
 		var/obj/item/paper/p = P

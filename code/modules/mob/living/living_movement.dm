@@ -34,12 +34,12 @@
 	. = ..()
 	update_move_intent_slowdown()
 
-/mob/living/update_sneak_invis()
-    if(m_intent == MOVE_INTENT_SNEAK)
-        return // Placeholder until further implementation
-        // Implementation of invisibility or other effects.
-        // For illustration:
-        // src.set_invisibility(INVISIBILITY_LEVEL_MINIMAL)
+// /mob/living/update_sneak_invis()
+// if(m_intent == MOVE_INTENT_SNEAK)
+//       return // Placeholder until further implementation
+		// Implementation of invisibility or other effects.
+		// For illustration:
+		// src.set_invisibility(INVISIBILITY_LEVEL_MINIMAL)
 
 /mob/living/def_intent_change()
 	. = ..()
@@ -48,6 +48,10 @@
 /mob/living/update_config_movespeed()
 	update_move_intent_slowdown()
 	return ..()
+
+/mob/living/equip_to_slot_if_possible(obj/item/W, slot, qdel_on_fail = FALSE, disable_warning = FALSE, redraw_mob = TRUE, bypass_equip_delay_self = FALSE, initial)
+	. = ..()
+	update_config_movespeed()
 
 /mob/living/proc/update_move_intent_slowdown()
 	var/mod = 0
@@ -58,10 +62,19 @@
 			mod = CONFIG_GET(number/movedelay/run_delay)
 		if(MOVE_INTENT_SNEAK)
 			mod = 6
-	if(STASPD < 6)
-		mod = mod+1
-	if(STASPD > 14)
-		mod = mod-0.5
+	var/spdchange = (10-STASPD)*0.1
+	var/armorWeight = check_armor_weight()
+	if(armorWeight == "Heavy")
+		spdchange = spdchange + 0.2
+		if(!check_armor_skill())
+			spdchange = spdchange + 0.2
+	if(armorWeight == "Medium")
+		spdchange = spdchange + 0.1
+		if(!check_armor_skill())
+			spdchange = spdchange + 0.1
+	spdchange = clamp(spdchange, -0.5, 1)  //if this is not clamped, it can make you go faster than you should be able to.
+	mod = mod+spdchange
+	//maximum speed is achieved at 15 speed.
 	add_movespeed_modifier(MOVESPEED_ID_MOB_WALK_RUN_CONFIG_SPEED, TRUE, 100, override = TRUE, multiplicative_slowdown = mod)
 
 /mob/living/proc/update_turf_movespeed(turf/open/T)

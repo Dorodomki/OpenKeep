@@ -26,8 +26,9 @@
 
 /obj/item/storage/fancy/PopulateContents()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
-	for(var/i = 1 to STR.max_items)
-		new spawn_type(src)
+	if(spawn_type)
+		for(var/i = 1 to STR.max_items)
+			new spawn_type(src)
 
 /obj/item/storage/fancy/update_icon()
 	if(fancy_open)
@@ -268,6 +269,15 @@
 	desc = ""
 	icon_state = "slime"
 	spawn_type = /obj/item/clothing/mask/cigarette/xeno
+
+/obj/item/storage/fancy/cigarettes/zig
+	name = "zigbox"
+	desc = ""
+	icon_state = "zig"
+	spawn_type = /obj/item/clothing/mask/cigarette/rollie/nicotine
+
+/obj/item/storage/fancy/cigarettes/zig/empty
+	spawn_type = null
 
 /obj/item/storage/fancy/cigarettes/cigpack_cannabis
 	name = "\improper Freak Brothers' Special packet"

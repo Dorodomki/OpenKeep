@@ -40,7 +40,7 @@
 /mob/living/carbon/check_projectile_dismemberment(obj/projectile/P, def_zone)
 	var/obj/item/bodypart/affecting = get_bodypart(check_zone(def_zone))
 	if(affecting && affecting.dismemberable && affecting.get_damage() >= (affecting.max_damage - P.dismemberment))
-		affecting.dismember(P.damtype)
+		affecting.dismember(P.damtype, P.woundclass)
 
 /mob/living/carbon/proc/can_catch_item(skip_throw_mode_check)
 	. = FALSE
@@ -58,14 +58,22 @@
 	if(!skipcatch)	//ugly, but easy
 		if(can_catch_item())
 			if(istype(AM, /obj/item))
-				var/obj/item/I = AM
-				if(isturf(I.loc))
-					I.attack_hand(src)
-					if(get_active_held_item() == I) //if our attack_hand() picks up the item...
-						visible_message("<span class='warning'>[src] catches [I]!</span>", \
-										"<span class='danger'>I catch [I] in mid-air!</span>")
-						throw_mode_off()
-						return 1
+				if(!istype(AM, /obj/item/net))
+					var/obj/item/I = AM
+					if(isturf(I.loc))
+						I.attack_hand(src)
+						if(get_active_held_item() == I) //if our attack_hand() picks up the item...
+							visible_message("<span class='warning'>[src] catches [I]!</span>", \
+											"<span class='danger'>I catch [I] in mid-air!</span>")
+							throw_mode_off()
+							return 1
+				else
+					var/obj/item/net/N
+					visible_message("<span class='warning'>[src] tries to catch \the [N] but gets snared by it!</span>", \
+									"<span class='danger'>Why did I even try to do this...?</span>") // Hahaha dumbass!!!
+					throw_mode_off()
+					N.ensnare(src)
+					return
 	..()
 
 
@@ -74,24 +82,23 @@
 	if(BP)
 		testing("projwound")
 		var/newdam = P.damage * (100-blocked)/100
-		BP.attacked_by(P.woundclass, newdam, zone_precise = def_zone)
+		BP.bodypart_attacked_by(P.woundclass, newdam, zone_precise = def_zone, crit_message = TRUE)
 		return TRUE
 
 /mob/living/carbon/check_projectile_embed(obj/projectile/P, def_zone, blocked)
 	var/obj/item/bodypart/BP = get_bodypart(check_zone(def_zone))
-	if(BP)
-		var/newdam = P.damage * (100-blocked)/100
-		if(newdam > 8)
-			if(prob(P.embedchance) && P.dropped)
-				BP.embedded_objects |= P.dropped
-				P.dropped.add_mob_blood(src)//it embedded itself in you, of course it's bloody!
-				P.dropped.forceMove(src)
-				to_chat(src, "<span class='danger'>[P.dropped] sticks in my [BP.name]!</span>")
-				emote("embed", forced = TRUE)
-				return TRUE
+	if(!BP)
+		return FALSE
+	var/newdam = P.damage * (100-blocked)/100
+	if(newdam <= 8)
+		return FALSE
+	if(prob(P.embedchance) && P.dropped)
+		BP.add_embedded_object(P.dropped, silent = FALSE, crit_message = TRUE)
+		return TRUE
+	return FALSE
 
 /mob/living/carbon/send_pull_message(mob/living/target)
-	var/used_limb = "chest"
+	var/used_limb = parse_zone(BODY_ZONE_CHEST)
 	var/obj/item/grabbing/I
 	if(active_hand_index == 1)
 		I = r_grab
@@ -136,40 +143,29 @@
 
 /mob/living/carbon/proc/find_used_grab_limb(mob/living/user) //for finding the exact limb or inhand to grab
 	var/used_limb = BODY_ZONE_CHEST
+	var/missing_nose = HAS_TRAIT(src, TRAIT_MISSING_NOSE)
 	var/obj/item/bodypart/affecting
 	affecting = get_bodypart(check_zone(user.zone_selected))
 	if(user.zone_selected && affecting)
 		if(user.zone_selected in affecting.grabtargets)
-			//used_limb = parse_zone(user.zone_selected, src)
-			used_limb = user.zone_selected
+			if(missing_nose && user.zone_selected == BODY_ZONE_PRECISE_NOSE)
+				used_limb = BODY_ZONE_HEAD
+			else
+				used_limb = user.zone_selected
 		else
 			used_limb = affecting.body_zone
 	return used_limb
 
-/mob/living/carbon/proc/parse_inhand(zone, mob/living/target)
-	if (zone == BODY_ZONE_R_INHAND)
-		var/obj/item/I = target.get_item_for_held_index(2)
-		if(I.can_parry)
-			return I.name
-		else
-			return "right hand"
-	else if (zone == BODY_ZONE_L_INHAND)
-		var/obj/item/I = target.get_item_for_held_index(1)
-		if(I.can_parry)
-			return I.name
-		else
-			return "left hand"
-
-/mob/proc/check_arm_grabbed()
+/mob/proc/check_arm_grabbed(index)
 	return
 
 /mob/living/carbon/check_arm_grabbed(index)
 	if(pulledby && pulledby != src)
 		var/obj/item/bodypart/BP
 		if(index == 1)
-			BP = get_bodypart(BODY_ZONE_R_ARM)
-		else if(index == 2)
 			BP = get_bodypart(BODY_ZONE_L_ARM)
+		else if(index == 2)
+			BP = get_bodypart(BODY_ZONE_R_ARM)
 		if(BP)
 			for(var/obj/item/grabbing/G in src.grabbedby)
 				if(G.limb_grabbed == BP)
@@ -201,14 +197,14 @@
 		return
 	affecting = get_bodypart(check_zone(useder)) //precise attacks, on yourself or someone you are grabbing
 	if(!affecting) //missing limb
-		to_chat(user, "<span class='warning'>Unfortunately, there's nothing there.</span>")
+		to_chat(user, span_warning("Unfortunately, there's nothing there."))
 		return FALSE
 	SEND_SIGNAL(I, COMSIG_ITEM_ATTACK_ZONE, src, user, affecting)
 	I.funny_attack_effects(src, user)
 	var/statforce = get_complex_damage(I, user)
 	if(statforce)
 		next_attack_msg.Cut()
-		affecting.attacked_by(user.used_intent.blade_class, statforce)
+		affecting.bodypart_attacked_by(user.used_intent.blade_class, statforce, crit_message = TRUE)
 		apply_damage(statforce, I.damtype, affecting)
 		if(I.damtype == BRUTE && affecting.status == BODYPART_ORGANIC)
 			if(prob(statforce))
@@ -237,11 +233,10 @@
 		send_item_attack_message(I, user, affecting.name)
 
 	if(statforce)
-		var/probability = I.get_dismemberment_chance(affecting)
-		if(prob(probability))
-			if(affecting.dismember(I.damtype))
-				I.add_mob_blood(src)
-				playsound(get_turf(src), I.get_dismember_sound(), 80, TRUE)
+		var/probability = I.get_dismemberment_chance(affecting, user)
+		if(prob(probability) && affecting.dismember(I.damtype, user.used_intent?.blade_class, user, user.zone_selected))
+			I.add_mob_blood(src)
+			playsound(get_turf(src), I.get_dismember_sound(), 80, TRUE)
 		return TRUE //successful attack
 
 /mob/living/carbon/attack_drone(mob/living/simple_animal/drone/user)
@@ -249,13 +244,12 @@
 
 //ATTACK HAND IGNORING PARENT RETURN VALUE
 /mob/living/carbon/attack_hand(mob/living/carbon/human/user)
-
 	if(!lying_attack_check(user))
-		return 0
+		return FALSE
 
 	if(!get_bodypart(check_zone(user.zone_selected)))
 		to_chat(user, "<span class='warning'>[src] is missing that.</span>")
-		return 0
+		return FALSE
 
 	for(var/thing in diseases)
 		var/datum/disease/D = thing
@@ -266,17 +260,37 @@
 		var/datum/disease/D = thing
 		if(D.spread_flags & DISEASE_SPREAD_CONTACT_SKIN)
 			ContactContractDisease(D)
-
+	
+	if(!user.cmode)
+		var/try_to_fail = !istype(user.rmb_intent, /datum/rmb_intent/weak)
+		var/list/possible_steps = list()
+		for(var/datum/surgery_step/surgery_step as anything in GLOB.surgery_steps)
+			if(!surgery_step.name)
+				continue
+			if(surgery_step.can_do_step(user, src, user.zone_selected, null, user.used_intent))
+				possible_steps[surgery_step.name] = surgery_step
+		var/possible_len = length(possible_steps)
+		if(possible_len)
+			var/datum/surgery_step/done_step
+			if(possible_len > 1)
+				var/input = input(user, "Which surgery step do you want to perform?", "PESTRA", ) as null|anything in possible_steps
+				if(input)
+					done_step = possible_steps[input]
+			else
+				done_step = possible_steps[possible_steps[1]]
+			if(done_step?.try_op(user, src, user.zone_selected, null, user.used_intent, try_to_fail))
+				return TRUE
+	/*
 	for(var/datum/surgery/S in surgeries)
 		if(!(mobility_flags & MOBILITY_STAND) || !S.lying_required)
 			if(user.used_intent.type == INTENT_HELP || user.used_intent.type == INTENT_DISARM)
 				if(S.next_step(user, user.used_intent))
-					return 1
-	return 0
+					return TRUE
+	*/
+	return FALSE
 
 
 /mob/living/carbon/attack_paw(mob/living/carbon/monkey/M)
-
 	if(can_inject(M, TRUE))
 		for(var/thing in diseases)
 			var/datum/disease/D = thing
@@ -338,7 +352,7 @@
 	if(affecting)
 		dam_zone = affecting.body_zone
 		if(affecting.get_damage() >= affecting.max_damage)
-			affecting.dismember()
+			affecting.dismember(BRUTE, attacker.a_intent.blade_class, attacker, attacker.zone_selected)
 			return null
 		return affecting.body_zone
 	return dam_zone

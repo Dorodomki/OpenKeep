@@ -49,7 +49,7 @@
 			var/needed_amount = R.reqs[A]
 			for(var/B in contents)
 				if(ispath(B, A))
-					if(!R.subtype_reqs && B in subtypesof(A))
+					if(!R.subtype_reqs && (B in subtypesof(A)))
 						continue
 					if (R.blacklist.Find(B))
 						testing("foundinblacklist")
@@ -102,6 +102,9 @@
 		if(istype(I, /obj/item/stack))
 			var/obj/item/stack/S = I
 			.["other"][I.type] += S.amount
+		else if(istype(I, /obj/item/natural/bundle))
+			var/obj/item/natural/bundle/B = I
+			.["other"][B.stacktype] += B.amount
 		else if(I.tool_behaviour)
 			.["tool_behaviour"] += I.tool_behaviour
 			.["other"][I.type] += 1
@@ -245,16 +248,20 @@
 							prob2fail += (10-L.STALUC)
 						if(L.STAINT > 10)
 							prob2craft += ((10-L.STAINT)*-1)*2
-					prob2craft = CLAMP(prob2craft, 0, 99)
-					if(prob(prob2fail))
-						to_chat(user, "<span class='danger'>MISTAKE! I've failed to craft [R.name]!</span>")
-						continue
-					if(!prob(prob2craft))
-						if(user.client?.prefs.showrolls)
-							to_chat(user, "<span class='danger'>I've failed to craft [R.name]... [prob2craft]%</span>")
+					if(prob2craft < 1)
+						to_chat(user, "<span class='danger'>I lack the skills for this...</span>")
+						return
+					else
+						prob2craft = CLAMP(prob2craft, 5, 99)
+						if(prob(prob2fail))
+							to_chat(user, "<span class='danger'>MISTAKE! I've failed to craft [R.name]!</span>")
 							continue
-							to_chat(user, "<span class='danger'>I've failed to craft [R.name].</span>")
-						continue
+						if(!prob(prob2craft))
+							if(user.client?.prefs.showrolls)
+								to_chat(user, "<span class='danger'>I've failed to craft [R.name]. (Success chance: [prob2craft]%)</span>")
+								continue
+								to_chat(user, "<span class='danger'>I've failed to craft [R.name].</span>")
+							continue
 					var/list/parts = del_reqs(R, user)
 					if(islist(R.result))
 						var/list/L = R.result
@@ -271,16 +278,17 @@
 							var/atom/movable/I = new R.result (T)
 							I.CheckParts(parts, R)
 							I.OnCrafted(user.dir)
-					user.visible_message("<span class='notice'>[user] [R.verbage] \a [R.name]!</span>", \
+					user.visible_message("<span class='notice'>[user] [R.verbage_tp] \a [R.name]!</span>", \
 										"<span class='notice'>I [R.verbage] \a [R.name]!</span>")
 					if(user.mind && R.skillcraft)
 						if(isliving(user))
 							var/mob/living/L = user
 							var/amt2raise = L.STAINT
+							var/boon = user.mind.get_learning_boon(R.skillcraft)
 							if(R.craftdiff > 0) //difficult recipe
 								amt2raise += (R.craftdiff * 6)
 							if(amt2raise > 0)
-								user.mind.adjust_experience(R.skillcraft, amt2raise, FALSE)
+								user.mind.adjust_experience(R.skillcraft, amt2raise * boon, FALSE)
 					return
 //				if(isitem(I))
 //					user.put_in_hands(I)
@@ -379,6 +387,35 @@
 							S = locate(S.type) in Deletion
 							S.add(data)
 						surroundings -= S
+			else if(ispath(A, /obj/item/natural) || A == /obj/item/grown/log/tree/stick)
+				while(amt > 0)
+					for(var/obj/item/natural/bundle/B in get_environment(user))
+						if(B.stacktype == A)
+							if(B.amount > amt)
+								B.amount -= amt
+								amt = 0
+								B.update_bundle()
+								for(var/b in amt)
+									surroundings -= B.stacktype
+								if(B.amount == 1)
+									new B.stacktype(B.loc)
+									qdel(B)
+								if(B.amount == 0)
+									qdel(B)
+								continue main_loop
+							else
+								qdel(B)
+								amt -= B.amount
+								for(var/b in B.amount)
+									surroundings -= B.stacktype
+						else
+							continue
+					var/atom/movable/I
+					while(amt > 0)
+						I = locate(A) in surroundings
+						Deletion += I
+						surroundings -= I
+						amt--
 			else
 				var/atom/movable/I
 				while(amt > 0)

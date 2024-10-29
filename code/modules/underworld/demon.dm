@@ -31,7 +31,7 @@
 	attack_same = FALSE
 	attack_sound = 'sound/combat/wooshes/bladed/wooshmed (1).ogg'
 	dodge_sound = 'sound/combat/dodge.ogg'
-	parry_sound = "bladedmedium"
+	parry_sound = "sword"
 	d_intent = INTENT_PARRY
 	speak_emote = list("growls")
 	limb_destroyer = 1
@@ -62,7 +62,7 @@
 			return "head"
 		if(BODY_ZONE_PRECISE_MOUTH)
 			return "head"
-		if(BODY_ZONE_PRECISE_HAIR)
+		if(BODY_ZONE_PRECISE_SKULL)
 			return "head"
 		if(BODY_ZONE_PRECISE_EARS)
 			return "head"
@@ -80,9 +80,9 @@
 			return "body"
 		if(BODY_ZONE_PRECISE_GROIN)
 			return "body"
-		if(BODY_ZONE_R_INHAND)
+		if(BODY_ZONE_PRECISE_R_INHAND)
 			return "body"
-		if(BODY_ZONE_L_INHAND)
+		if(BODY_ZONE_PRECISE_L_INHAND)
 			return "body"
 		if(BODY_ZONE_HEAD)
 			return "head"

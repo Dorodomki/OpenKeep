@@ -122,8 +122,7 @@
 
 /proc/check_pq_menu(ckey)
 	if(!fexists("data/player_saves/[copytext(ckey,1,2)]/[ckey]/preferences.sav"))
-		to_chat(src, "<span class='boldwarning'>User does not exist.</span>")
-		return
+		to_chat(usr, "<span class='boldwarning'>User does not exist.</span>")
 	var/popup_window_data = "<center>[ckey]</center>"
 	popup_window_data += "<center>PQ: [get_playerquality(ckey, TRUE, TRUE)] ([get_playerquality(ckey, FALSE, TRUE)])</center>"
 
@@ -192,6 +191,10 @@
 	if(!amt2change && !raisin)
 		return
 	adjust_playerquality(amt2change, theykey, src.ckey, raisin)
+	for(var/client/C in GLOB.clients) // I hate this, but I'm not refactoring the cancer above this point.
+		if(lowertext(C.key) == lowertext(theykey))
+			to_chat(C, "<span class=\"admin\"><span class=\"prefix\">ADMIN LOG:</span> <span class=\"message linkify\">Your PQ has been adjusted by [amt2change] by [key] for reason: [raisin]</span></span>")
+			return
 
 /proc/add_commend(key, giver)
 	if(!giver || !key)

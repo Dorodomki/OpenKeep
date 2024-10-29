@@ -57,8 +57,14 @@
 /datum/skill/combat/crossbows
 	name = "Crossbows"
 
+/datum/skill/combat/firearms
+	name = "Firearms"
+
 /datum/skill/combat/wrestling
 	name = "Wrestling"
 
 /datum/skill/combat/unarmed
 	name = "Fist-fighting"
+
+/datum/skill/combat/shields
+	name = "Shields"

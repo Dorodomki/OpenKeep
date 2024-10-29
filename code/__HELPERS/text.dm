@@ -657,7 +657,7 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 			buffer = copytext(buffer, 1, cutoff) + punctbuffer
 		if(!findtext(buffer,GLOB.is_alphanumeric))
 			continue
-		if(!buffer || length(buffer) > 280 || length(buffer) <= cullshort || buffer in accepted)
+		if(!buffer || length(buffer) > 280 || length(buffer) <= cullshort || (buffer in accepted))
 			continue
 
 		accepted += buffer
@@ -794,7 +794,7 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 		var/cword = pick(words)
 		words.Remove(cword)
 		var/suffix = copytext(cword,length(cword)-1,length(cword))
-		while(length(cword)>0 && suffix in list(".",",",";","!",":","?"))
+		while(length(cword)>0 && (suffix in list(".",",",";","!",":","?")))
 			cword  = copytext(cword,1              ,length(cword)-1)
 			suffix = copytext(cword,length(cword)-1,length(cword)  )
 		if(length(cword))
@@ -802,6 +802,27 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 	message = "[prefix][jointext(rearranged," ")]"
 	. = message
 
+/proc/vocal_cord_torn(message)
+	message = uppertext(message)
+	if(prob(20))
+		message = pick("GHHHHHH...", "GLLLL...", "ZZRRRRR...")
+	else
+		var/new_message = ""
+		var/m_len = length(message)
+		var/tracker = 1
+		while(tracker < m_len)
+			var/nletter = copytext(message, tracker, tracker + 1)
+			if(!(nletter in list("A", "E", "I", "O", "U", " ")) && (tracker % 2))
+				nletter = pick("GH", "SHK", "KSS", "SS", "GNHH")
+			else if((nletter == " ") && prob(50))
+				nletter = "... "
+			new_message += nletter
+			tracker++
+		for(var/uhoh in list("E", "I", "O"))
+			new_message = replacetext(new_message, uhoh, pick("H", "G", "GHHH", "GRRR", "GLLL", "ZZZGH", "GLRG", "... ", "RRR"))
+		new_message = replacetext(new_message, "U", pick("UHHH", "UH... "))
+		message = new_message
+	return message
 
 /proc/readable_corrupted_text(text)
 	var/list/corruption_options = list("..", "£%", "~~\"", "!!", "*", "^", "$!", "-", "}", "?")

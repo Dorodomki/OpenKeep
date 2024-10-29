@@ -37,6 +37,8 @@ GLOBAL_LIST_EMPTY(respawncounts)
 
 /client
 	var/commendedsomeone
+	var/whitelisted = 2
+	var/blacklisted = 2
 
 /client/Topic(href, href_list, hsrc)
 	if(!usr || usr != mob)	//stops us calling Topic for somebody else's client. Also helps prevent usr=null
@@ -89,7 +91,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 		log_href("[src] (usr:[usr]\[[COORD(usr)]\]) : [hsrc ? "[hsrc] " : ""][href]")
 
 	//byond bug ID:2256651
-	if (asset_cache_job && asset_cache_job in completed_asset_jobs)
+	if (asset_cache_job && (asset_cache_job in completed_asset_jobs))
 		to_chat(src, "<span class='danger'>An error has been detected in how my client is receiving resources. Attempting to correct.... (If you keep seeing these messages you might want to close byond and reconnect)</span>")
 		src << browse("...", "window=asset_cache_browser")
 
@@ -117,28 +119,64 @@ GLOBAL_LIST_EMPTY(respawncounts)
 		return
 
 	if(href_list["commendsomeone"])
-		if(SSticker.current_state != GAME_STATE_FINISHED)
+		commendation_popup()
+		return
+
+	switch(href_list["_src_"])
+		if("holder")
+			hsrc = holder
+		if("usr")
+			hsrc = mob
+		if("prefs")
+			if (inprefs)
+				return
+			inprefs = TRUE
+			. = prefs.process_link(usr,href_list)
+			inprefs = FALSE
 			return
-		if(commendedsomeone)
+		if("vars")
+			return view_var_Topic(href,href_list,hsrc)
+		if("chat")
+			return chatOutput.Topic(href, href_list)
+
+	switch(href_list["action"])
+		if("openLink")
+			src << link(href_list["link"])
+	if (hsrc)
+		var/datum/real_src = hsrc
+		if(QDELETED(real_src))
 			return
-		var/list/selections = GLOB.character_ckey_list.Copy()
-		if(!selections.len)
-			return
-		var/selection = input(src,"Which Character?") as null|anything in sortList(selections)
-		if(!selection)
-			return
-		if(commendedsomeone)
-			return
-		var/theykey = selections[selection]
-		if(theykey == ckey)
-			to_chat(src,"You can't commend yourself.")
-			return
-		if(theykey)
-			commendedsomeone = TRUE
-			add_commend(theykey, ckey)
-			to_chat(src,"[selection] commended.")
-			log_game("COMMEND: [ckey] commends [theykey].")
-			log_admin("COMMEND: [ckey] commends [theykey].")
+
+	..()	//redirect to hsrc.Topic()
+
+/client/proc/commendation_popup()
+	if(SSticker.current_state != GAME_STATE_FINISHED)
+		return
+	if(commendedsomeone)
+		return
+	var/list/selections = GLOB.character_ckey_list.Copy()
+	if(!selections.len)
+		return
+	var/selection = input(src,"Which Character?") as null|anything in sortList(selections)
+	if(!selection)
+		return
+	if(commendedsomeone)
+		return
+	var/theykey = selections[selection]
+	if(theykey == ckey)
+		to_chat(src,"You can't commend yourself.")
+		return
+	if(theykey)
+		commendedsomeone = TRUE
+		add_commend(theykey, ckey)
+		to_chat(src,"[selection] commended.")
+		log_game("COMMEND: [ckey] commends [theykey].")
+		log_admin("COMMEND: [ckey] commends [theykey].")
+	return
+
+/client/Topic(href, href_list, hsrc)
+	if(href_list["schizohelp"])
+		answer_schizohelp(locate(href_list["schizohelp"]))
 		return
 
 	switch(href_list["_src_"])
@@ -791,7 +829,7 @@ GLOBAL_LIST_EMPTY(external_rsc_urls)
 
 			sleep(15 SECONDS) //Longer sleep here since this would trigger if a client tries to reconnect manually because the inital reconnect failed
 
-			 //we sleep after telling the client to reconnect, so if we still exist something is up
+			//we sleep after telling the client to reconnect, so if we still exist something is up
 			log_access("Forced disconnect: [key] [computer_id] [address] - CID randomizer check")
 
 			qdel(src)
@@ -1107,3 +1145,31 @@ GLOBAL_LIST_EMPTY(external_rsc_urls)
 		if(isliving(mob)) //no ghost can call this
 			mob.ghostize(can_reenter_corpse)
 		testing("[mob] [mob.type] YEA CLIE")
+
+
+/client/proc/whitelisted()
+	if(whitelisted != 2)
+		return whitelisted
+	else
+		if(check_whitelist(ckey))
+			whitelisted = 1
+		else
+			whitelisted = 0
+		return whitelisted
+
+/client/proc/blacklisted()
+	if(blacklisted != 2)
+		return blacklisted
+	else
+		if(check_blacklist(ckey))
+			blacklisted = 1
+		else
+			blacklisted = 0
+		return blacklisted
+
+/client/proc/commendsomeone(forced = FALSE)
+	set category = "OOC"
+	set name = "Commend"
+	set desc = "Make that one person you had Quality RolePlay with happy."
+
+	commendation_popup(forced)

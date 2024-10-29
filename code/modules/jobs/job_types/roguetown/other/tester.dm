@@ -10,16 +10,15 @@
 	total_positions = 0
 	spawn_positions = 0
 #endif
-	allowed_sexes = list("male", "female")
-	allowed_races = list("Humen",
-	"Humen",
-	"Elf",
-	"Elf",
-	"Half-Elf",
-	"Dark Elf",
-	"Tiefling",
-	"Dwarf",
-	"Dwarf"
+	allowed_sexes = list(MALE, FEMALE)
+	allowed_races = list(
+		"Humen",
+		"Elf",
+		"Half-Elf",
+		"Dwarf",
+		"Tiefling",
+		"Dark Elf",
+		"Aasimar"
 	)
 	tutorial = ""
 	outfit = /datum/outfit/job/roguetown/tester
@@ -31,7 +30,7 @@
 	shoes = /obj/item/clothing/shoes/roguetown/boots/leather
 	wrists = /obj/item/clothing/wrists/roguetown/bracers
 	belt = /obj/item/storage/belt/rogue/leather
-	armor = /obj/item/clothing/suit/roguetown/armor/gambeson/lord
+	armor = /obj/item/clothing/suit/roguetown/armor/gambeson/arming
 	if(prob(50))
 		armor = /obj/item/clothing/suit/roguetown/armor/gambeson
 	neck = /obj/item/roguekey/mercenary

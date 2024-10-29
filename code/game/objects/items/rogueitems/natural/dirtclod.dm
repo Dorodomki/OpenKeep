@@ -1,10 +1,11 @@
 /obj/item/natural/dirtclod
 	name = "clod"
-	desc = ""
+	desc = "A handful of sod."
 	icon_state = "clod1"
 	dropshrink = 0
 	throwforce = 0
 	w_class = WEIGHT_CLASS_TINY
+	possible_potion = "poison"
 
 /obj/item/natural/dirtclod/attackby(obj/item/W, mob/user, params)
 	if(istype(W, /obj/item/rogueweapon/shovel))
@@ -46,7 +47,7 @@
 
 /obj/structure/fluff/clodpile
 	name = "dirt pile"
-	desc = ""
+	desc = "A collection of dirt, amalgamated into a mighty structure incomparable to any creation made by man or god alike."
 	icon_state = "clodpile"
 	var/dirtamt = 5
 	icon = 'icons/roguetown/items/natural.dmi'

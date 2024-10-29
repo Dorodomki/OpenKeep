@@ -129,33 +129,8 @@
 #define YOUNGBEARD		19 //dwarves only
 #define STUBBLE			20
 #define OLDGREY			21
-
-
-//organ slots
-#define ORGAN_SLOT_BRAIN "brain"
-#define ORGAN_SLOT_APPENDIX "appendix"
-#define ORGAN_SLOT_RIGHT_ARM_AUG "r_arm_device"
-#define ORGAN_SLOT_LEFT_ARM_AUG "l_arm_device"
-#define ORGAN_SLOT_STOMACH "stomach"
-#define ORGAN_SLOT_STOMACH_AID "stomach_aid"
-#define ORGAN_SLOT_BREATHING_TUBE "breathing_tube"
-#define ORGAN_SLOT_EARS "ears"
-#define ORGAN_SLOT_EYES "eye_sight"
-#define ORGAN_SLOT_LUNGS "lungs"
-#define ORGAN_SLOT_HEART "heart"
-#define ORGAN_SLOT_ZOMBIE "zombie_infection"
-#define ORGAN_SLOT_THRUSTERS "thrusters"
-#define ORGAN_SLOT_HUD "eye_hud"
-#define ORGAN_SLOT_LIVER "liver"
-#define ORGAN_SLOT_TONGUE "tongue"
-#define ORGAN_SLOT_VOICE "vocal_cords"
-#define ORGAN_SLOT_ADAMANTINE_RESONATOR "adamantine_resonator"
-#define ORGAN_SLOT_HEART_AID "heartdrive"
-#define ORGAN_SLOT_BRAIN_ANTIDROP "brain_antidrop"
-#define ORGAN_SLOT_BRAIN_ANTISTUN "brain_antistun"
-#define ORGAN_SLOT_TAIL "tail"
-#define ORGAN_SLOT_PARASITE_EGG "parasite_egg"
-#define ORGAN_SLOT_REGENERATIVE_CORE "hivecore"
+#define NO_ORGAN_FEATURES			22
+#define NO_BODYPART_FEATURES			23
 
 //organ defines
 #define STANDARD_ORGAN_THRESHOLD 	100
@@ -171,3 +146,8 @@
 #define G_MALE 1
 #define G_FEMALE 2
 #define G_PLURAL 3
+
+#define MANDATORY_FEATURE_LIST list("mcolor" = "FFF", "mcolor2" = "FFF", "mcolor3" = "FFF", "ethcolor" = "9c3030", "legs" = "Normal Legs")
+
+#define HAIR_COLOR_LIST list("#8f5a00", "#593800", "#362200", "#4e422e", "#8c8271", "#bfb7ab", "#31302e", "#f0dc48")
+#define EYE_COLOR_LIST list("#865900", "#06b400", "#312f27", "#008e83", "#002d8e", "#c16c00")

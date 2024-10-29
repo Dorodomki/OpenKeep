@@ -43,6 +43,15 @@
 /turf/open/floor/rogue/ruinedwood/chevron
 	icon_state = "weird2"
 
+/*	..................   Darker version   ................... */
+/turf/open/floor/rogue/ruinedwood/darker // here problem was opposite, too bright wood for bandit lair
+	color = "#d9c9b0"
+/turf/open/floor/rogue/ruinedwood/turned/darker
+	color = "#d9c9b0"
+
+/turf/open/floor/rogue/tile/kitchen // faded kitchen, too dark floors look bad IMO, this much nicer
+	icon_state = "tavern"
+
 /turf/open/floor/rogue/twig
 	icon_state = "twig"
 	footstep = FOOTSTEP_GRASS
@@ -114,7 +123,7 @@
 
 /turf/open/floor/rogue/grass
 	name = "grass"
-	desc = ""
+	desc = "Grass, sodden in mud and bogwater."
 	icon_state = "grass"
 	layer = MID_TURF_LAYER
 	footstep = FOOTSTEP_GRASS
@@ -132,7 +141,7 @@
 
 /turf/open/floor/rogue/dirt/ambush
 	name = "dirt"
-	desc = ""
+	desc = "The dirt is pocked with the scars of countless wars."
 	icon_state = "dirt"
 	layer = MID_TURF_LAYER
 	footstep = FOOTSTEP_GRASS
@@ -150,7 +159,7 @@
 
 /turf/open/floor/rogue/dirt
 	name = "dirt"
-	desc = ""
+	desc = "The dirt is pocked with the scars of countless wars."
 	icon_state = "dirt"
 	layer = MID_TURF_LAYER
 	footstep = FOOTSTEP_GRASS
@@ -285,7 +294,7 @@
 
 /turf/open/floor/rogue/dirt/road
 	name = "dirt"
-	desc = ""
+	desc = "The dirt is pocked with the scars of countless steps."
 	icon_state = "road"
 	layer = MID_TURF_LAYER
 	footstep = FOOTSTEP_SAND
@@ -383,7 +392,7 @@
 
 /turf/open/floor/rogue/underworld/road
 	name = "ash"
-	desc = ""
+	desc = "Smells like burnt wood."
 	icon_state = "ash"
 	layer = MID_TURF_LAYER
 	footstep = FOOTSTEP_SAND
@@ -401,7 +410,7 @@
 
 /turf/open/floor/rogue/volcanic
 	name = "dirt"
-	desc = ""
+	desc = "The dirt is pocked with the scars of countless steps."
 	icon_state = "lavafloor"
 	layer = MID_TURF_LAYER
 	footstep = FOOTSTEP_SAND
@@ -702,7 +711,7 @@
 	icon_state = ""
 
 /turf/open/floor/rogue/carpet/lord/Initialize()
-	..()
+	. = ..()
 	if(GLOB.lordprimary)
 		lordcolor(GLOB.lordprimary,GLOB.lordsecondary)
 	else
@@ -761,3 +770,14 @@
 	clawfootstep = FOOTSTEP_HARD_CLAW
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
 	landsound = 'sound/foley/jumpland/grassland.wav'
+
+/turf/open/floor/rogue/plank
+	icon_state = "plank"
+	footstep = FOOTSTEP_WOOD
+	barefootstep = FOOTSTEP_HARD_BAREFOOT
+	clawfootstep = FOOTSTEP_WOOD_CLAW
+	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	landsound = 'sound/foley/jumpland/woodland.wav'
+
+/turf/open/floor/rogue/plank/h
+	icon_state = "plank2"

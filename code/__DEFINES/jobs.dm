@@ -1,7 +1,7 @@
 
 #define ENGSEC			(1<<0)
 
-#define CAPTAIN			(1<<0)
+#define CAPTAIN_SS13	(1<<0)
 #define HOS				(1<<1)
 #define WARDEN			(1<<2)
 #define DETECTIVE		(1<<3)
@@ -53,6 +53,7 @@
 #define JOB_UNAVAILABLE_WTEAM 8
 #define JOB_UNAVAILABLE_LASTCLASS 9
 #define JOB_UNAVAILABLE_PATRON 10
+#define JOB_UNAVAILABLE_JOB_COOLDOWN 11
 
 #define DEFAULT_RELIGION "Christianity"
 #define DEFAULT_DEITY "Space Jesus"
@@ -95,17 +96,22 @@
 #define NOBLEMEN		(1<<0)
 
 #define LORD		(1<<0)
-#define STEWARD		(1<<1)
-#define KNIGHT		(1<<2)
-#define WIZARD		(1<<3)
-#define SHERIFF		(1<<4)
+#define LADY		(1<<1)
+#define HAND		(1<<2)
+#define STEWARD		(1<<3)
+#define WIZARD		(1<<4)
+#define CAPTAIN		(1<<5)
+#define ARCHIVIST   (1<<6)
+#define MERCHANT	(1<<7)
+#define FELDSHER    (1<<8)
+#define NIGHTMAN    (1<<9)
 
 #define GARRISON		(1<<1)
 
 #define GUARDSMAN	(1<<0)
 #define DUNGEONEER	(1<<1)
 #define WATCHMAN	(1<<2)
-#define WOODSMAN	(1<<3)
+#define MAYOR       (1<<3)
 
 #define CHURCHMEN		(1<<2)
 
@@ -116,13 +122,11 @@
 
 #define SERFS			(1<<3)
 
-#define BARKEEP		(1<<0)
-#define ARCHIVIST	(1<<1)
+#define INNKEEP		(1<<0)
 #define BLACKSMITH	(1<<2)
 #define ALCHEMIST	(1<<3)
 #define MASON		(1<<4)
 #define TAILOR		(1<<5)
-#define MERCHANT	(1<<6)
 #define SCRIBE		(1<<7)
 
 #define PEASANTS		(1<<4)
@@ -139,8 +143,9 @@
 #define ADVENTURER	(1<<9)
 #define COOK		(1<<10)
 #define GRABBER		(1<<11)
+#define WAVE_DRIFTER (1<<16)
 
-#define YOUNGFOLK		(1<<5)
+#define APPRENTICES		(1<<5)
 
 #define APPRENTICE	(1<<0)
 #define SQUIRE		(1<<1)
@@ -163,8 +168,10 @@
 #define JDO_HAND 2
 #define JDO_STEWARD 3
 
-#define JDO_MAGICIAN 5
-#define JDO_WAPP 6
+#define JDO_MAGICIAN 4
+#define JDO_WAPP 5
+
+#define JDO_FELDSHER 6
 
 #define JDO_CAPTAIN 7
 #define JDO_ROYALGUARD 7.1
@@ -181,8 +188,10 @@
 
 #define JDO_PURITAN 16
 #define JDO_SHEPHERD 17
+#define JDO_TEMPLAR 17.1
 
 #define JDO_MERCHANT 18
+#define JDO_TAILOR 18.1
 #define JDO_GRABBER 19
 
 #define JDO_ARMORER 20
@@ -194,7 +203,7 @@
 #define JDO_BUTLER 24
 #define JDO_SERVANT 25
 
-#define JDO_BARKEEP 26
+#define JDO_INNKEEP 26
 #define JDO_COOK 27
 
 #define JDO_BUTCHER 27.1
@@ -202,8 +211,8 @@
 
 #define JDO_GRAVEMAN 28
 
-#define JDO_NIGHTMAN 28.1
-#define JDO_NIGHTMAIDEN 28.2
+#define JDO_NITEMAN 28.1
+#define JDO_NITEMAIDEN 28.2
 
 #define JDO_JESTER 29
 #define JDO_PRISONER 30
@@ -213,6 +222,7 @@
 
 #define JDO_ADVENTURER 32.1
 #define JDO_PILGRIM 32.2
+#define JDO_DRIFTER 32.3
 
 #define JDO_MERCENARY 33
 

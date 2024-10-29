@@ -36,14 +36,14 @@
 		handle_ai()
 
 	if(advsetup)
-		Stun(100)
+		Stun(50)
 
 	if(mind)
 		for(var/datum/antagonist/A in mind.antag_datums)
 			A.on_life(src)
 
 	if(!IS_IN_STASIS(src))
-		if(.) //not dead
+		if(stat < 3) //not dead
 			for(var/datum/mutation/human/HM in dna.mutations) // Handle active genes
 				HM.on_life()
 
@@ -56,12 +56,11 @@
 						var/datum/game_mode/chaosmode/C = SSticker.mode
 						if(istype(C))
 							if(mind)
-								if(!mind.antag_datums || !mind.antag_datums.len)
-									allmig_reward++
-									to_chat(src, "<span class='danger'>Nights Survived: \Roman[allmig_reward]</span>")
-									if(C.allmig)
-										if(allmig_reward > 3)
-											adjust_triumphs(1)
+								allmig_reward++
+								to_chat(src, "<span class='danger'>Nights Survived: \Roman[allmig_reward]</span>")
+								if(C.allmig)
+									if(allmig_reward > 3)
+										adjust_triumphs(1)
 					if(has_status_effect(/datum/status_effect/debuff/trainsleep))
 						remove_status_effect(/datum/status_effect/debuff/trainsleep)
 			if(leprosy == 1)
@@ -81,16 +80,17 @@
 			handle_liver()
 			update_rogfat()
 			update_rogstam()
-			if(charflaw)
+			if(charflaw && !charflaw.ephemeral)
 				charflaw.flaw_on_life(src)
 			if(health <= 0)
 				adjustOxyLoss(0.5)
 			else
-				if(!(NOBLOOD in dna.species.species_traits))
-					if(blood_volume <= BLOOD_VOLUME_SURVIVE)
-						adjustOxyLoss(0.5)
-						if(blood_volume <= 20)
-							adjustOxyLoss(5)
+				if(stat < 3) //not dead
+					if(!(NOBLOOD in dna?.species?.species_traits))
+						if(blood_volume <= BLOOD_VOLUME_SURVIVE)
+							adjustOxyLoss(0.5)
+							if(blood_volume <= 40)
+								adjustOxyLoss(3)
 			if(!client && !HAS_TRAIT(src, TRAIT_NOSLEEP))
 				if(mob_timers["slo"])
 					if(world.time > mob_timers["slo"] + 90 SECONDS)
@@ -101,11 +101,9 @@
 				if(mob_timers["slo"])
 					mob_timers["slo"] = null
 
-		//Stuff jammed in your limbs hurts
-		handle_embedded_objects()
-
 		if(dna?.species)
 			dna.species.spec_life(src) // for mutantraces
+
 	if(!typing)
 		set_typing_indicator(FALSE)
 	//Update our name based on whether our face is obscured/disfigured
@@ -124,19 +122,17 @@
 		for(var/datum/antagonist/A in mind.antag_datums)
 			A.on_life(src)
 
-	if(!IS_IN_STASIS(src))
-		. = ..()
-		handle_embedded_objects()
-
+	. = ..()
 	name = get_visible_name()
 
 /mob/living/carbon/human/proc/on_daypass()
-	if(dna?.species)
-		if(STUBBLE in dna.species.species_traits)
-			if(gender == MALE)
-				if(age != AGE_YOUNG)
-					has_stubble = TRUE
-					update_hair()
+	if(stat < 3) //not dead
+		if(dna?.species)
+			if(STUBBLE in dna.species.species_traits)
+				if(gender == MALE)
+					if(prob(50))
+						has_stubble = TRUE
+						update_hair()
 
 /mob/living/carbon/human/calculate_affecting_pressure(pressure)
 	if (wear_armor && head && istype(wear_armor, /obj/item/clothing) && istype(head, /obj/item/clothing))
@@ -382,10 +378,9 @@
 	..()
 	//Puke if toxloss is too high
 	if(!stat)
-		if(prob(33))
-			if(getToxLoss() >= 75 && blood_volume)
-				mob_timers["puke"] = world.time
-				vomit(1, blood = TRUE)
+		if(prob(33) && getToxLoss() >= 75)
+			mob_timers["puke"] = world.time
+			vomit(1, blood = TRUE)
 
 /mob/living/carbon/human/has_smoke_protection()
 	if(wear_mask)
@@ -399,48 +394,6 @@
 		if(CH.clothing_flags & BLOCK_GAS_SMOKE_EFFECT)
 			return TRUE
 	return ..()
-
-/obj/item/proc/on_embed_life(mob/living/user)
-	return
-
-/mob/living/proc/handle_embedded_objects()
-	for(var/obj/item/I in simple_embedded_objects)
-
-		if(I.on_embed_life(src))
-			return
-
-		if(prob(I.embedding.embedded_pain_chance))
-//			BP.receive_damage(I.w_class*I.embedding.embedded_pain_multiplier)
-			to_chat(src, "<span class='danger'>[I] in me hurts!</span>")
-
-		if(prob(I.embedding.embedded_fall_chance))
-//			BP.receive_damage(I.w_class*I.embedding.embedded_fall_pain_multiplier)
-			simple_embedded_objects -= I
-			I.forceMove(drop_location())
-			to_chat(src,"<span class='danger'>[I] falls out of me!</span>")
-			if(!has_embedded_objects())
-				clear_alert("embeddedobject")
-
-/mob/living/carbon/human/handle_embedded_objects()
-	for(var/X in bodyparts)
-		var/obj/item/bodypart/BP = X
-		for(var/obj/item/I in BP.embedded_objects)
-
-			if(I.on_embed_life(BP))
-				return
-
-			if(prob(I.embedding.embedded_pain_chance))
-				BP.receive_damage(I.w_class*I.embedding.embedded_pain_multiplier)
-//				to_chat(src, "<span class='danger'>[I] in my [BP.name] hurts!</span>")
-
-			if(prob(I.embedding.embedded_fall_chance))
-				BP.receive_damage(I.w_class*I.embedding.embedded_fall_pain_multiplier)
-				BP.embedded_objects -= I
-				I.forceMove(drop_location())
-				to_chat(src,"<span class='danger'>[I] falls out of my [BP.name]!</span>")
-				if(!has_embedded_objects())
-					clear_alert("embeddedobject")
-					SEND_SIGNAL(src, COMSIG_CLEAR_MOOD_EVENT, "embedded")
 
 /mob/living/carbon/human/proc/handle_heart()
 	var/we_breath = !HAS_TRAIT_FROM(src, TRAIT_NOBREATH, SPECIES_TRAIT)

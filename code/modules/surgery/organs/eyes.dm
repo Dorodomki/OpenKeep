@@ -1,6 +1,6 @@
 /obj/item/organ/eyes
-	name = "eye"
-	icon_state = "eye1"
+	name = "eyes"
+	icon_state = "eyeball"
 	desc = ""
 	zone = BODY_ZONE_PRECISE_R_EYE
 	slot = ORGAN_SLOT_EYES
@@ -22,7 +22,6 @@
 	var/sight_flags = 0
 	var/see_in_dark = 8
 	var/tint = 0
-	var/eye_color = "" //set to a hex code to override a mob's eye color
 	var/eye_icon_state = "eyes"
 	var/old_eye_color = "fff"
 	var/flash_protect = FLASH_PROTECTION_NONE
@@ -30,6 +29,34 @@
 	var/lighting_alpha
 	var/no_glasses
 	var/damaged	= FALSE	//damaged indicates that our eyes are undergoing some level of negative effect
+
+	var/eye_color = "#FFFFFF"
+	var/heterochromia = FALSE
+	var/second_color = "#FFFFFF"
+
+
+/obj/item/organ/eyes/update_overlays()
+	. = ..()
+	if(eye_color && (icon_state == "eyeball"))
+		var/mutable_appearance/iris_overlay = mutable_appearance(src.icon, "eyeball-iris")
+		iris_overlay.color = "#" + eye_color
+		. += iris_overlay
+
+/obj/item/organ/eyes/update_accessory_colors()
+	var/list/colors_list = list()
+	colors_list += eye_color
+	if(heterochromia)
+		colors_list += second_color
+	else
+		colors_list += eye_color
+	accessory_colors = color_list_to_string(colors_list)
+
+/obj/item/organ/eyes/imprint_organ_dna(datum/organ_dna/organ_dna)
+	. = ..()
+	var/datum/organ_dna/eyes/eyes_dna = organ_dna
+	eyes_dna.eye_color = eye_color
+	eyes_dna.heterochromia = heterochromia
+	eyes_dna.second_color = second_color
 
 /obj/item/organ/eyes/Insert(mob/living/carbon/M, special = FALSE, drop_if_replaced = FALSE, initialising)
 	. = ..()
@@ -43,13 +70,15 @@
 			eye_color = HMN.eye_color
 		if(HAS_TRAIT(HMN, TRAIT_NIGHT_VISION) && !lighting_alpha)
 			lighting_alpha = LIGHTING_PLANE_ALPHA_NV_TRAIT
+	for(var/datum/wound/facial/eyes/eye_wound as anything in M.get_wounds())
+		qdel(eye_wound)
 	M.update_tint()
 	owner.update_sight()
 	if(M.has_dna() && ishuman(M))
 		M.dna.species.handle_body(M) //updates eye icon
 
 /obj/item/organ/eyes/Remove(mob/living/carbon/M, special = 0)
-	..()
+	. = ..()
 	if(ishuman(M) && eye_color)
 		var/mob/living/carbon/human/HMN = M
 		HMN.eye_color = old_eye_color
@@ -59,7 +88,6 @@
 	M.set_blindness(0)
 	M.set_blurriness(0)
 	M.update_sight()
-
 
 /obj/item/organ/eyes/on_life()
 	..()
@@ -127,6 +155,19 @@
 /obj/item/organ/eyes/night_vision/mushroom
 	name = "fung-eye"
 	desc = ""
+
+/obj/item/organ/eyes/elf
+	name = "elf eyes"
+	desc = ""
+	see_in_dark = 4
+	lighting_alpha = LIGHTING_PLANE_ALPHA_NV_TRAIT
+
+/obj/item/organ/eyes/elf/less
+	name = "elf eyes"
+	desc = ""
+	see_in_dark = 3
+	lighting_alpha = LIGHTING_PLANE_ALPHA_LESSER_NV_TRAIT
+
 
 ///Robotic
 

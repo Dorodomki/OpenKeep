@@ -3,18 +3,28 @@
 	set name = "Journey to the Underworld"
 	set category = "Spirit"
 
-	switch(alert("Begin the long walk in the underworld too your judgement....",,"Yes","No"))
+	switch(alert("Begin the long walk in the underworld to your judgement....",,"Yes","No"))
 		if("Yes")
 			if(istype(mob, /mob/living/carbon/human))
 				var/mob/living/carbon/human/D = mob
 				if(D.buried && D.funeral)
 					D.returntolobby()
 					return
-			for(var/obj/effect/landmark/underworld/A in world)
-				var/mob/living/carbon/spirit/O = new /mob/living/carbon/spirit(A.loc)
+
+				// Check if the player's job is hiv+
+				var/datum/job/target_job = SSjob.GetJob(D.mind.assigned_role)
+				if(target_job)
+					if(target_job.job_reopens_slots_on_death)
+						target_job.current_positions = max(0, target_job.current_positions - 1)
+					if(target_job.same_job_respawn_delay)
+						// Store the current time for the player
+						GLOB.job_respawn_delays[src.ckey] = world.time + target_job.same_job_respawn_delay
+
+			for(var/turf/spawn_loc in GLOB.underworldcoinspawns)
+				var/mob/living/carbon/spirit/O = new /mob/living/carbon/spirit(spawn_loc)
 				O.livingname = mob.name
 				O.ckey = ckey
-				O.PATRON = prefs.selected_patron
+				O.patron = prefs.selected_patron
 				SSdroning.area_entered(get_area(O), O.client)
 			verbs -= /client/proc/descend
 		if("No")
@@ -56,15 +66,17 @@
 	client.verbs -= /client/proc/descend
 	qdel(src)
 	return
-
+/*	Commented out. Resource intensive and not actually needed with the timer to put in hands and maze setup
 /proc/coin_upkeep()
-	var/amountinworld = 0
-	for(var/obj/item/underworld/coin/A in world)
-		amountinworld += 1
-	if(amountinworld < 3)
-		for(var/obj/effect/landmark/underworldcoin/B in world)
-			new /obj/item/underworld/coin(B.loc)
-
+	if(length(GLOB.underworldcoins) >= 3)
+		return
+	for(var/turf/spawn_loc in GLOB.underworldcoinspawns)
+		if(locate(/obj/item/underworld/coin) in spawn_loc)
+			continue
+		new /obj/item/underworld/coin(spawn_loc)
+		if(length(GLOB.underworldcoins) >= 3)
+			break
+*/
 
 // shit that eventually will need moved elsewhere
 /obj/item/flashlight/lantern/shrunken
@@ -96,7 +108,7 @@
 	density = TRUE
 
 /obj/structure/underworld/carriageman/Initialize()
-	..()
+	. = ..()
 	set_light(5, 30, LIGHT_COLOR_BLUE)
 
 /obj/structure/underworld/carriageman/attack_hand(mob/living/carbon/spirit/user)
@@ -143,7 +155,7 @@
 
 
 /obj/structure/underworld/carriage/Initialize()
-	..()
+	. = ..()
 	set_light(5, 30, LIGHT_COLOR_BLUE)
 
 /obj/structure/underworld/carriage/attack_hand(mob/living/carbon/spirit/user)
@@ -162,6 +174,14 @@
 	desc = "This is more than just a coin."
 	icon = 'icons/roguetown/underworld/enigma_husks.dmi'
 	icon_state = "soultoken_floor"
+
+/obj/item/underworld/coin/Initialize()
+	. = ..()
+	GLOB.underworldcoins += src
+
+/obj/item/underworld/coin/Destroy()
+	GLOB.underworldcoins -= src
+	return ..()
 
 /obj/item/underworld/coin/pickup(mob/user)
 	..()
@@ -205,7 +225,7 @@
 	attack_same = FALSE
 	attack_sound = 'sound/combat/wooshes/bladed/wooshmed (1).ogg'
 	dodge_sound = 'sound/combat/dodge.ogg'
-	parry_sound = "bladedmedium"
+	parry_sound = "sword"
 	d_intent = INTENT_PARRY
 	speak_emote = list("growls")
 	limb_destroyer = 1
@@ -235,7 +255,7 @@
 			return "head"
 		if(BODY_ZONE_PRECISE_MOUTH)
 			return "head"
-		if(BODY_ZONE_PRECISE_HAIR)
+		if(BODY_ZONE_PRECISE_SKULL)
 			return "head"
 		if(BODY_ZONE_PRECISE_EARS)
 			return "head"
@@ -253,9 +273,9 @@
 			return "body"
 		if(BODY_ZONE_PRECISE_GROIN)
 			return "body"
-		if(BODY_ZONE_R_INHAND)
+		if(BODY_ZONE_PRECISE_R_INHAND)
 			return "body"
-		if(BODY_ZONE_L_INHAND)
+		if(BODY_ZONE_PRECISE_L_INHAND)
 			return "body"
 		if(BODY_ZONE_HEAD)
 			return "head"
@@ -308,8 +328,8 @@
 	if(. && prob(8) && iscarbon(target))
 		var/mob/living/carbon/C = target
 		C.Immobilize(50)
-		C.visible_message("<span class='danger'>\The [src] paralyzes \the [C] in fear!</span>", \
-				"<span class='danger'>\The [src] paralyzes me!</span>")
+		C.visible_message(span_danger("\The [src] paralyzes \the [C] in fear!"), \
+				span_danger("\The [src] paralyzes me!"))
 		emote("laugh")
 
 /obj/effect/landmark/underworldsafe/Crossed(atom/movable/AM, oldloc)
@@ -317,4 +337,3 @@
 		for(var/mob/living/carbon/human/A in view(4))
 			to_chat(A, "The monster's form dematerializes as it nears the Carriage.")
 		qdel(AM)
-

@@ -44,13 +44,14 @@
 		switch(lootroll)
 			if(1)
 				new /mob/living/carbon/human/species/skeleton/npc(mastert)
+				new /obj/structure/closet/crate/chest/lootbox(mastert)
 			if(2)
 				new /obj/structure/closet/crate/chest/lootbox(mastert)
 	..()
 
 /obj/structure/closet/dirthole/closed/loot/examine(mob/user)
 	. = ..()
-	if(HAS_TRAIT(user, RTRAIT_NOSTINK))
+	if(HAS_TRAIT(user, TRAIT_SOUL_EXAMINE))
 		if(lootroll == 1)
 			. += "<span class='warning'>Better let this one sleep.</span>"
 
@@ -68,8 +69,31 @@
 /obj/structure/closet/dirthole/toggle(mob/living/user)
 	return
 
+/obj/structure/closet/dirthole/proc/attemptwatermake(mob/living/user, obj/item/reagent_containers/bucket)
+	testing("attempting to make water proc called")
+	if(user.used_intent.type == /datum/intent/splash)
+		testing("intent check complete")
+		if(bucket.reagents)
+			testing("reagent check complete")
+			var/datum/reagent/master_reagent = bucket.reagents.get_master_reagent()
+			if(do_after(user, 10 SECONDS, target = src))
+				if(bucket.reagents.remove_reagent(master_reagent.type, clamp(master_reagent.volume, 1, 100)))
+					testing("remove reagent proc complete")
+					var/turf/open/water/creatable/W = new(get_turf(src))
+					W.water_reagent = master_reagent.type
+					W.water_volume = clamp(master_reagent.volume, 1, 100)
+					W.update_icon()
+					playsound(W, 'sound/foley/waterenter.ogg', 100, FALSE)
+					QDEL_NULL(src) // Somehow this actually makes it disappear. Hilarious.
+	testing("proc ended")
+
 /obj/structure/closet/dirthole/attackby(obj/item/attacking_item, mob/user, params)
 	if(!istype(attacking_item, /obj/item/rogueweapon/shovel))
+		if(istype(attacking_item, /obj/item/reagent_containers/glass/bucket/wooden))
+			var/obj/item/reagent_containers/glass/bucket/wooden/bucket = attacking_item
+			testing("attempt water make proc should be called now")
+			attemptwatermake(user, bucket)
+			return
 		return ..()
 	var/obj/item/rogueweapon/shovel/attacking_shovel = attacking_item
 	if(user.used_intent.type != /datum/intent/shovelscoop)
@@ -119,7 +143,7 @@
 //								playsound(mastert,'sound/items/dig_shovel.ogg', 100, TRUE)
 //								mastert.ChangeTurf(T.type, flags = CHANGETURF_INHERIT_AIR)
 //								return
-			to_chat(user, "<span class='warning'>I can't dig myself any deeper.</span>")
+			to_chat(user, "<span class='warning'>I think that's deep enough.</span>")
 			return
 		var/used_str = 10
 		if(iscarbon(user))
@@ -144,7 +168,11 @@
 				qdel(G)
 				if(isliving(user))
 					var/mob/living/L = user
-					L.apply_status_effect(/datum/status_effect/debuff/cursed)
+					if(HAS_TRAIT(L, TRAIT_GRAVEROBBER))
+						to_chat(user, "<span class='warning'>Necra turns a blind eye to my deeds.</span>")
+					else
+						to_chat(user, "<span class='warning'>Necra shuns my blasphemous deeds, I am cursed!</span>")
+						L.apply_status_effect(/datum/status_effect/debuff/cursed)
 		update_icon()
 		attacking_shovel.heldclod = new(attacking_shovel)
 		attacking_shovel.update_icon()
@@ -154,12 +182,12 @@
 /datum/status_effect/debuff/cursed
 	id = "cursed"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/cursed
-	effectedstats = list("fortune" = -3)
+	effectedstats = list("fortune" = -5) // More severe so that the permanent debuff from having the perk makes it actually worth it.
 	duration = 10 MINUTES
 
 /atom/movable/screen/alert/status_effect/debuff/cursed
 	name = "Cursed"
-	desc = ""
+	desc = "Necra has punished me by my blasphemous deeds with terribly bad luck."
 	icon_state = "debuff"
 
 /obj/structure/closet/dirthole/MouseDrop_T(atom/movable/O, mob/living/user)
@@ -187,13 +215,13 @@
 	var/list/targets = list(O, src)
 	add_fingerprint(user)
 	user.visible_message("<span class='warning'>[user] [actuallyismob ? "tries to ":""]stuff [O] into [src].</span>", \
-				 	 	"<span class='warning'>I [actuallyismob ? "try to ":""]stuff [O] into [src].</span>", \
-				 	 	"<span class='hear'>I hear clanging.</span>")
+						"<span class='warning'>I [actuallyismob ? "try to ":""]stuff [O] into [src].</span>", \
+						"<span class='hear'>I hear clanging.</span>")
 	if(actuallyismob)
 		if(do_after_mob(user, targets, 40))
 			user.visible_message("<span class='notice'>[user] stuffs [O] into [src].</span>", \
-							 	 "<span class='notice'>I stuff [O] into [src].</span>", \
-							 	 "<span class='hear'>I hear a loud bang.</span>")
+								"<span class='notice'>I stuff [O] into [src].</span>", \
+								"<span class='hear'>I hear a loud bang.</span>")
 			var/mob/living/L = O
 			if(!issilicon(L))
 				L.Paralyze(40)
@@ -277,7 +305,7 @@
 						if(prob(5))
 							new /obj/item/natural/worms/grubs(T)
 						else
-							new /obj/item/natural/worms/leeches(T)
+							new /obj/item/natural/worms/leech(T)
 					else
 						new /obj/item/natural/worms(T)
 		else

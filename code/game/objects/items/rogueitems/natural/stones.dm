@@ -2,8 +2,8 @@
 
 /obj/item/natural/stone
 	name = "stone"
+	desc = "A piece of rough ground stone."
 	icon_state = "stone1"
-	desc = ""
 	gripped_intents = null
 	dropshrink = 0.75
 	possible_item_intents = list(INTENT_GENERIC)
@@ -17,6 +17,11 @@
 	icon_state = "stone[rand(1,4)]"
 	..()
 
+/obj/item/natural/stone/equipped(mob/living/carbon/human/user, slot)
+	. = ..()
+	if(HAS_TRAIT(user, TRAIT_ROTMAN))
+		to_chat(user, span_info("The [src] slips through dead fingers..."))	
+		user.dropItemToGround(src, TRUE)
 
 /obj/item/natural/stone/attackby(obj/item/W, mob/user, params)
 	user.changeNext_move(CLICK_CD_MELEE)
@@ -33,7 +38,7 @@
 
 /obj/item/natural/rock
 	name = "rock"
-	desc = ""
+	desc = "A large stone that looks breakable."
 	icon_state = "stonebig1"
 	dropshrink = 0
 	throwforce = 25
@@ -118,4 +123,11 @@
 	mineralType = /obj/item/rogueore/coal
 
 /obj/item/natural/rock/salt
-	mineralType = /obj/item/reagent_containers/powder/flour/salt
+	mineralType = /obj/item/reagent_containers/powder/salt
+
+/obj/item/natural/rock/silver
+	mineralType = /obj/item/rogueore/silver
+
+/obj/item/natural/rock/copper
+	mineralType = /obj/item/rogueore/copper
+

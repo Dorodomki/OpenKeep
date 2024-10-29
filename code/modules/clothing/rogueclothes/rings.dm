@@ -11,16 +11,89 @@
 	icon_state = ""
 	slot_flags = ITEM_SLOT_RING
 	resistance_flags = FIRE_PROOF | ACID_PROOF
+	dropshrink = 0.8
 
 /obj/item/clothing/ring/silver
 	name = "silver ring"
 	icon_state = "ring_s"
 	sellprice = 33
 
+/obj/item/clothing/ring/silver/makers_guild
+	name = "Makers ring"
+	desc = "The wearer is a proud member of the Makers' guild."
+	icon_state = "guild_mason"
+	sellprice = 0
+
+/obj/item/clothing/ring/silver/dorpel
+	name = "dorpel ring"
+	icon_state = "s_ring_diamond"
+	sellprice = 140
+
+/obj/item/clothing/ring/silver/blortz
+	name = "blortz ring"
+	icon_state = "s_ring_quartz"
+	sellprice = 110
+
+/obj/item/clothing/ring/silver/saffira
+	name = "saffira ring"
+	icon_state = "s_ring_sapphire"
+	sellprice = 95
+
+/obj/item/clothing/ring/silver/gemerald
+	name = "gemerald ring"
+	icon_state = "s_ring_emerald"
+	sellprice = 80
+
+/obj/item/clothing/ring/silver/toper
+	name = "toper ring"
+	icon_state = "s_ring_topaz"
+	sellprice = 65
+
+/obj/item/clothing/ring/silver/rontz
+	name = "rontz ring"
+	icon_state = "s_ring_ruby"
+	sellprice = 130
+
 /obj/item/clothing/ring/gold
 	name = "gold ring"
 	icon_state = "ring_g"
 	sellprice = 70
+
+/obj/item/clothing/ring/gold/guild_mercator
+	name = "Mercator ring"
+	desc = "The wearer is a proud member of the Mercator guild."
+	icon_state = "guild_mercator"
+	sellprice = 0
+
+/obj/item/clothing/ring/gold/dorpel
+	name = "dorpel ring"
+	icon_state = "g_ring_diamond"
+	sellprice = 270
+
+/obj/item/clothing/ring/gold/blortz
+	name = "blortz ring"
+	icon_state = "g_ring_quartz"
+	sellprice = 245
+
+/obj/item/clothing/ring/gold/saffira
+	name = "saffira ring"
+	icon_state = "g_ring_sapphire"
+	sellprice = 200
+
+/obj/item/clothing/ring/gold/gemerald
+	name = "gemerald ring"
+	icon_state = "g_ring_emerald"
+	sellprice = 195
+
+/obj/item/clothing/ring/gold/toper
+	name = "toper ring"
+	icon_state = "g_ring_topaz"
+	sellprice = 180
+
+/obj/item/clothing/ring/gold/rontz
+	name = "rontz ring"
+	icon_state = "g_ring_ruby"
+	sellprice = 255
 
 /obj/item/clothing/ring/active
 	var/active = FALSE
@@ -82,3 +155,89 @@
 	var/datum/component/magcom = GetComponent(/datum/component/anti_magic)
 	if(magcom)
 		magcom.RemoveComponent()
+
+// ................... Ring of Protection ....................... (rare treasure, not for purchase)
+/obj/item/clothing/ring/gold/protection
+	name = "ring of protection"
+	desc = "Old ring, inscribed with arcane words. Once held magical powers, perhaps it does still?"
+	icon_state = "ring_protection"
+	var/antileechy
+	var/antimagika	// will cause bugs if equipped roundstart to wizards
+	var/antishocky
+
+/obj/item/clothing/ring/gold/protection/Initialize()
+	. = ..()
+	switch(rand(1,4))
+		if(1)
+			antileechy = TRUE
+		if(2)
+			antileechy = TRUE
+		if(3)
+			antishocky = TRUE
+		if(4)
+			return
+
+/obj/item/clothing/ring/gold/protection/equipped(mob/user, slot)
+	. = ..()
+	if(antileechy)
+		if (slot == SLOT_RING && istype(user))
+			ADD_TRAIT(user, TRAIT_LEECHIMMUNE,"Unleechable")
+		else
+			REMOVE_TRAIT(user, TRAIT_LEECHIMMUNE,"Unleechable")
+
+	if(antimagika)
+		if (slot == SLOT_RING && istype(user))
+			ADD_TRAIT(user, TRAIT_ANTIMAGIC,"Anti-Magic")
+		else
+			REMOVE_TRAIT(user, TRAIT_ANTIMAGIC,"Anti-Magic")
+
+	if(antishocky)
+		if (slot == SLOT_RING && istype(user))
+			ADD_TRAIT(user, TRAIT_SHOCKIMMUNE,"Shock Immunity")
+		else
+			REMOVE_TRAIT(user, TRAIT_SHOCKIMMUNE,"Shock Immunity")
+
+/obj/item/clothing/ring/gold/protection/dropped(mob/user)
+	. = ..()
+	REMOVE_TRAIT(user, TRAIT_LEECHIMMUNE,"Unleechable")
+	REMOVE_TRAIT(user, TRAIT_ANTIMAGIC,"Anti-Magic")
+	REMOVE_TRAIT(user, TRAIT_SHOCKIMMUNE, "Shock Immunity")
+
+/obj/item/clothing/ring/gold/ravox
+	name = "ring of ravox"
+	desc = "Old ring, inscribed with arcane words. Just being near it imbues you with otherworldly strength."
+	icon_state = "ring_ravox"
+
+/obj/item/clothing/ring/gold/ravox/equipped(mob/living/user, slot)
+	. = ..()
+	if(user.mind)
+		if (slot == SLOT_RING && istype(user))
+			user.apply_status_effect(/datum/status_effect/buff/ravox)
+		else
+			user.remove_status_effect(/datum/status_effect/buff/ravox)
+
+/obj/item/clothing/ring/silver/calm
+	name = "soothing ring"
+	desc = "A lightweight ring that feels entirely weightless, and easing to your mind as you place it upon a finger."
+	icon_state = "ring_calm"
+
+/obj/item/clothing/ring/silver/calm/equipped(mob/living/user, slot)
+	. = ..()
+	if(user.mind)
+		if (slot == SLOT_RING && istype(user))
+			user.apply_status_effect(/datum/status_effect/buff/calm)
+		else
+			user.remove_status_effect(/datum/status_effect/buff/calm)
+
+/obj/item/clothing/ring/silver/noc
+	name = "ring of noc"
+	desc = "Old ring, inscribed with arcane words. Just being near it imbues you with otherworldly knowledge."
+	icon_state = "ring_sapphire"
+
+/obj/item/clothing/ring/silver/noc/equipped(mob/living/user, slot)
+	. = ..()
+	if(user.mind)
+		if (slot == SLOT_RING && istype(user))
+			user.apply_status_effect(/datum/status_effect/buff/noc)
+		else
+			user.remove_status_effect(/datum/status_effect/buff/noc)

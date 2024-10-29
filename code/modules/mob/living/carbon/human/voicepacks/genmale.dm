@@ -3,8 +3,6 @@
 	switch(modifiers)
 		if("old")
 			used = getmold(soundin)
-		if("young")
-			used = getmyoung(soundin)
 		if("silenced")
 			used = getmsilenced(soundin)
 	if(!used)
@@ -94,5 +92,7 @@
 				used = 'sound/vo/attn.ogg'
 			if("psst")
 				used = 'sound/vo/psst.ogg'
+			if("moan")
+				used = list('sound/vo/male/gen/moan (1).ogg','sound/vo/male/gen/moan (2).ogg','sound/vo/male/gen/moan (3).ogg')
 
 	return used

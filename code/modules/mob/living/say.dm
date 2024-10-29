@@ -86,7 +86,7 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 	var/static/list/unconscious_allowed_modes = list(MODE_CHANGELING = TRUE, MODE_ALIEN = TRUE)
 	var/talk_key = get_key(message)
 
-	var/static/list/one_character_prefix = list(MODE_HEADSET = TRUE, MODE_ROBOT = TRUE, MODE_WHISPER = TRUE)
+	var/static/list/one_character_prefix = list(MODE_HEADSET = TRUE, MODE_ROBOT = TRUE, MODE_WHISPER = TRUE, MODE_SING = TRUE)
 
 	var/ic_blocked = FALSE
 	if(client && !forced && CHAT_FILTER_CHECK(message))
@@ -135,7 +135,10 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 
 	if(check_whisper(original_message, forced) || !can_speak_basic(original_message, ignore_spam, forced))
 		return
-
+/* Not the best idea, commenting out subtler
+	if(check_subtler(original_message, forced) || !can_speak_basic(original_message, ignore_spam, forced))
+		return
+*/
 	if(in_critical)
 		if(!(crit_allowed_modes[message_mode]))
 			return
@@ -210,6 +213,11 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 					spans |= stuff
 		else
 			spans |= L.spans
+
+	if(message_mode == MODE_SING)
+		var/randomnote = pick("\u2669", "\u266A", "\u266B")
+		message = "[randomnote] [message] [randomnote]"
+		spans |= SPAN_SINGING
 
 	var/radio_return = radio(message, message_mode, spans, language)
 	if(radio_return & ITALICS)
@@ -337,29 +345,30 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 
 /mob/living/can_speak(message) //For use outside of Say()
 	if(can_speak_basic(message) && can_speak_vocal(message))
-		return 1
+		return TRUE
+	return FALSE
 
 /mob/living/proc/can_speak_basic(message, ignore_spam = FALSE, forced = FALSE) //Check BEFORE handling of xeno and ling channels
 	if(client)
 		if(client.prefs.muted & MUTE_IC)
 			to_chat(src, "<span class='danger'>I cannot speak in IC (muted).</span>")
-			return 0
+			return FALSE
 		if(!(ignore_spam || forced) && client.handle_spam_prevention(message,MUTE_IC))
-			return 0
+			return FALSE
 
-	return 1
+	return TRUE
 
 /mob/living/proc/can_speak_vocal(message) //Check AFTER handling of xeno and ling channels
 	if(HAS_TRAIT(src, TRAIT_MUTE))
-		return 0
+		return FALSE
 
 	if(is_muzzled())
-		return 0
+		return FALSE
 
 	if(!IsVocal())
-		return 0
+		return FALSE
 
-	return 1
+	return TRUE
 
 /mob/living/proc/get_key(message)
 	var/key = copytext(message, 1, 2)
@@ -376,6 +385,10 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 	return null
 
 /mob/living/proc/treat_message(message)
+	if(HAS_TRAIT(src, TRAIT_ZOMBIE_SPEECH))
+		message = "[repeat_string(rand(1, 3), "U")][repeat_string(rand(1, 6), "H")]..."
+	else if(HAS_TRAIT(src, TRAIT_GARGLE_SPEECH))
+		message = vocal_cord_torn(message)
 
 	if(HAS_TRAIT(src, TRAIT_UNINTELLIGIBLE_SPEECH))
 		message = unintelligize(message)
@@ -402,7 +415,7 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 		if(message_mode == MODE_HEADSET)
 			imp.radio.talk_into(src, message, , spans, language)
 			return ITALICS | REDUCE_RANGE
-		if(message_mode == MODE_DEPARTMENT || message_mode in imp.radio.channels)
+		if(message_mode == MODE_DEPARTMENT || (message_mode in imp.radio.channels))
 			imp.radio.talk_into(src, message, message_mode, spans, language)
 			return ITALICS | REDUCE_RANGE
 
@@ -439,6 +452,8 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 		. = "stammers"
 	else if(derpspeech)
 		. = "gibbers"
+	else if(message_mode == MODE_SING)
+		. = verb_sing
 	else
 		. = ..()
 

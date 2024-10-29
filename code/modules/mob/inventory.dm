@@ -149,32 +149,34 @@
 	return !held_items[hand_index]
 
 /mob/proc/put_in_hand(obj/item/I, hand_index, forced = FALSE, ignore_anim = TRUE)
-	if(forced || can_put_in_hand(I, hand_index))
-		if(isturf(I.loc) && !ignore_anim)
-			I.do_pickup_animation(src)
-		if(hand_index == null)
-			return FALSE
-		if(get_item_for_held_index(hand_index) != null)
-			return FALSE
-//			dropItemToGround(get_item_for_held_index(hand_index), force = TRUE)
-		I.forceMove(src)
-		held_items[hand_index] = I
-		if(I.possible_item_intents)
-			update_a_intents()
-		I.layer = ABOVE_HUD_LAYER
-		I.plane = ABOVE_HUD_PLANE
-		I.equipped(src, SLOT_HANDS)
-		if(I.pulledby)
-			I.pulledby.stop_pulling()
-		update_inv_hands()
-		I.pixel_x = initial(I.pixel_x)
-		I.pixel_y = initial(I.pixel_y)
-		if(hud_used)
-			hud_used.throw_icon?.update_icon()
-			hud_used.give_intent?.update_icon()
-		givingto = null
-		return hand_index || TRUE
-	return FALSE
+	if(hand_index == null || (!forced && !can_put_in_hand(I, hand_index)))
+		return FALSE
+
+	if(isturf(I.loc) && !ignore_anim)
+		I.do_pickup_animation(src)
+	if(get_item_for_held_index(hand_index) != null)
+		return FALSE
+//		dropItemToGround(get_item_for_held_index(hand_index), force = TRUE)
+	I.forceMove(src)
+	held_items[hand_index] = I
+	I.layer = ABOVE_HUD_LAYER
+	I.plane = ABOVE_HUD_PLANE
+	I.equipped(src, ITEM_SLOT_HANDS)
+	if(QDELETED(I)) // this is here because some ABSTRACT items like slappers and circle hands could be moved from hand to hand then delete, which meant you'd have a null in your hand until you cleared it (say, by dropping it)
+		held_items[hand_index] = null
+		return FALSE
+	if(I.possible_item_intents)
+		update_a_intents()
+	if(I.pulledby)
+		I.pulledby.stop_pulling()
+	update_inv_hands()
+	I.pixel_x = initial(I.pixel_x)
+	I.pixel_y = initial(I.pixel_y)
+	if(hud_used)
+		hud_used.throw_icon?.update_icon()
+		hud_used.give_intent?.update_icon()
+	givingto = null
+	return hand_index
 
 //Puts the item into the first available left hand if possible and calls all necessary triggers/updates. returns 1 on success.
 /mob/proc/put_in_l_hand(obj/item/I)
@@ -277,16 +279,16 @@
 //The following functions are the same save for one small difference
 
 /**
-  * Used to drop an item (if it exists) to the ground.
-  * * Will pass as TRUE is successfully dropped, or if there is no item to drop.
-  * * Will pass FALSE if the item can not be dropped due to TRAIT_NODROP via doUnEquip()
-  * If the item can be dropped, it will be forceMove()'d to the ground and the turf's Entered() will be called.
+ * Used to drop an item (if it exists) to the ground.
+ * * Will pass as TRUE is successfully dropped, or if there is no item to drop.
+ * * Will pass FALSE if the item can not be dropped due to TRAIT_NODROP via doUnEquip()
+ * If the item can be dropped, it will be forceMove()'d to the ground and the turf's Entered() will be called.
 */
 /mob/proc/dropItemToGround(obj/item/I, force = FALSE, silent = TRUE)
 	. = doUnEquip(I, force, drop_location(), FALSE, silent = silent)
 	if(. && I) //ensure the item exists and that it was dropped properly.
-		I.pixel_x = initial(I.pixel_x) += rand(-6,6)
-		I.pixel_y = initial(I.pixel_x) += rand(-6,6)
+		I.pixel_x = initial(I.pixel_x) + rand(-6,6)
+		I.pixel_y = initial(I.pixel_x) + rand(-6,6)
 
 //for when the item will be immediately placed in a loc other than the ground
 /mob/proc/transferItemToLoc(obj/item/I, newloc = null, force = FALSE, silent = TRUE)

@@ -10,6 +10,7 @@
 	drop_sound = 'sound/foley/dropsound/book_drop.ogg'
 	force = 5
 	associated_skill = /datum/skill/misc/reading
+	var/random_cover
 
 /obj/item/book/rogue/getonmobprop(tag)
 	. = ..()
@@ -67,6 +68,12 @@
 				if("onbelt")
 					return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
 
+// ...... Book Cover Randomizer Code  (gives the book a radom cover when random_cover = TRUE)
+/obj/item/book/rogue/Initialize()
+	. = ..()
+	if(random_cover)
+		base_icon_state = "book[rand(1,8)]"
+		icon_state = "[base_icon_state]_0"
 
 /obj/item/book/rogue/attack_self(mob/user)
 	if(!open)
@@ -182,6 +189,10 @@
 	base_icon_state = "bibble"
 	title = "bible"
 	dat = "gott.json"
+	force = 2
+	force_wielded = 4
+	throwforce = 1
+	possible_item_intents = list(/datum/intent/use, /datum/intent/mace/strike/wood)
 
 /obj/item/book/rogue/bibble/read(mob/user)
 	if(!open)
@@ -192,6 +203,7 @@
 	if(!user.hud_used.reads)
 		return
 	if(!user.can_read(src))
+		user.mind.adjust_experience(/datum/skill/misc/reading, 4, FALSE)
 		return
 	if(in_range(user, src) || isobserver(user))
 		user.changeNext_move(CLICK_CD_MELEE)
@@ -204,7 +216,7 @@
 /obj/item/book/rogue/bibble/attack(mob/living/M, mob/user)
 	if(user.mind && user.mind.assigned_role == "Priest")
 		if(!user.can_read(src))
-			to_chat(user, "<span class='warning'>I don't understand these scribbly black lines.</span>")
+			//to_chat(user, "<span class='warning'>I don't understand these scribbly black lines.</span>")
 			return
 		M.apply_status_effect(/datum/status_effect/buff/blessed)
 		user.visible_message("<span class='notice'>[user] blesses [M].</span>")
@@ -278,7 +290,6 @@
 	icon_state ="book2_0"
 	base_icon_state = "book2"
 	bookfile = "tales2.json"
-
 
 /obj/item/book/rogue/tales3
 	name = "Myths & Legends of Rockhill & Beyond Volume I"
@@ -371,6 +382,13 @@
 	base_icon_state = "book8"
 	bookfile = "tales14.json"
 
+/obj/item/book/rogue/mysticalfog
+	name = "Studie of the Etheral Foge phenomenon"
+	desc = "By Roubert the Elder"
+	icon_state ="book7_0"
+	base_icon_state = "book8"
+	bookfile = "tales15.json"
+
 /obj/item/book/rogue/playerbook
 	var/player_book_text = "moisture in the air or water leaks have rendered the carefully written caligraphy of this book unreadable"
 	var/player_book_title = "unknown title"
@@ -396,16 +414,27 @@
 	base_icon_state = "basic_book"
 	override_find_book = TRUE
 
-/obj/item/book/rogue/playerbook/Initialize(loc, in_round_player_generated, var/mob/living/in_round_player_mob, text)
+/obj/item/book/rogue/playerbook/proc/get_player_input(mob/living/in_round_player_mob, text)
+	player_book_author_ckey = in_round_player_mob.ckey
+	player_book_title = dd_limittext(capitalize(sanitize_hear_message(input(in_round_player_mob, "What title do you want to give the book? (max 42 characters)", "Title", "Unknown"))), MAX_NAME_LEN)
+	player_book_author = "[dd_limittext(sanitize_hear_message(input(in_round_player_mob, "Do you want to preface your author name with an author title? (max 42 characters)", "Author Title", "")), MAX_NAME_LEN)] [in_round_player_mob.real_name]"
+	player_book_icon = book_icons[input(in_round_player_mob, "Choose a book style", "Book Style") as anything in book_icons]
+	player_book_text = text
+	message_admins("[player_book_author_ckey]([in_round_player_mob.real_name]) has generated the player book: [player_book_title]")
+	update_book_data()
+
+/obj/item/book/rogue/playerbook/proc/update_book_data()
+	name = "[player_book_title]"
+	desc = "By [player_book_author]"
+	icon_state = "[player_book_icon]_0"
+	base_icon_state = "[player_book_icon]"
+	pages = list("<b3><h3>Title: [player_book_title]<br>Author: [player_book_author]</b><h3>[player_book_text]")
+
+/obj/item/book/rogue/playerbook/Initialize(mapload, in_round_player_generated, mob/living/in_round_player_mob, text)
 	. = ..()
 	is_in_round_player_generated = in_round_player_generated
 	if(is_in_round_player_generated)
-		player_book_author_ckey = in_round_player_mob.ckey
-		player_book_title = dd_limittext(capitalize(sanitize_hear_message(input(in_round_player_mob, "What title do you want to give the book? (max 42 characters)", "Title", "Unknown"))), MAX_NAME_LEN)
-		player_book_author = "[dd_limittext(sanitize_hear_message(input(in_round_player_mob, "Do you want to preface your author name with an author title? (max 42 characters)", "Author Title", "")), MAX_NAME_LEN)] [in_round_player_mob.real_name]"
-		player_book_icon = book_icons[input(in_round_player_mob, "Choose a book style", "Book Style") as anything in book_icons]
-		player_book_text = text
-		message_admins("[player_book_author_ckey]([in_round_player_mob.real_name]) has generated the player book: [player_book_title]")
+		INVOKE_ASYNC(src, PROC_REF(update_book_data), in_round_player_mob, text)
 	else
 		player_book_titles = SSlibrarian.pull_player_book_titles()
 		player_book_content = SSlibrarian.file2playerbook(pick(player_book_titles))
@@ -414,13 +443,7 @@
 		player_book_author_ckey = player_book_content["author_ckey"]
 		player_book_icon = player_book_content["icon"]
 		player_book_text = player_book_content["text"]
-
-	name = "[player_book_title]"
-	desc = "By [player_book_author]"
-	icon_state = "[player_book_icon]_0"
-	base_icon_state = "[player_book_icon]"
-
-	pages = list("<b3><h3>Title: [player_book_title]<br>Author: [player_book_author]</b><h3>[player_book_text]")
+		update_book_data()
 
 /obj/item/manuscript
 	name = "2 page manuscript"
@@ -498,6 +521,7 @@
 	if(!user.hud_used.reads)
 		return
 	if(!user.can_read(src))
+		user.mind.adjust_experience(/datum/skill/misc/reading, 4, FALSE)
 		return
 	if(in_range(user, src) || isobserver(user))
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -569,3 +593,133 @@
 	desc = "Apply on a written manuscript to create a book"
 	icon = 'icons/roguetown/items/misc.dmi'
 	icon_state = "book_crafting_kit"
+
+
+
+
+// ...... Books made by the Stonekeep community within #lore channel, approved & pushed by Guayo (current staff incharge of adding ingame books)
+
+/* ______Example of layout of added in book
+
+/obj/item/book/rogue/book_name_here
+	name = "Title of your book here"
+	desc = "Who wrote it or maybe some flavor here"
+	bookfile = "filenamehere.json"
+	random_cover = TRUE
+
+____________End of Example*/
+
+/obj/item/book/rogue/magicaltheory
+	name = "Arcane Foundations - A historie of Magicks"
+	desc = "Written by the rector of the Valerian College of Magick"
+	icon_state ="knowledge_0"
+	base_icon_state = "knowledge"
+	bookfile = "MagicalTheory.json"
+
+/obj/item/book/rogue/vownecrapage
+	name = "Necra's Vow of Silence"
+	desc = "A faded page, with seemingly no author."
+	icon_state = "book8_0"
+	base_icon_state = "book8"
+	bookfile = "VowOfNecraPage.json"
+
+/obj/item/book/rogue/godofdreamsandnightmares
+	name = "God of Dreams & Nightmares"
+	desc = "An old decrepit book, with seemingly no author."
+	bookfile = "GodDreams.json"
+	random_cover = TRUE
+
+/obj/item/book/rogue/psybibleplayerbook
+	name = "Psybible"
+	desc = "An old tome, authored by Father Ambrose of Grenzelhoft."
+	bookfile = "PsyBible.json"
+	random_cover = TRUE
+
+/obj/item/book/rogue/manners
+	name = "Manners of Gentlemen"
+	desc = "A popular guide for young people of genteel birth."
+	icon_state ="basic_book_0"
+	base_icon_state = "basic_book"
+	bookfile = "manners.json"
+
+/obj/item/book/rogue/advice_soup
+	name = "Soup de Rattus"
+	desc = "Weathered book containing advice on surviving a famine."
+	bookfile = "AdviceSoup.json"
+	random_cover = TRUE
+
+/obj/item/book/rogue/advice_farming
+	name = "The Secrets of the Agronome"
+	desc = "Soilson bible."
+	bookfile = "AdviceFarming.json"
+	random_cover = TRUE
+
+/obj/item/book/rogue/yeoldecookingmanual // new book with some tips to learn
+	name = "Ye olde ways of cookinge"
+	desc = "Penned by Svend Fatbeard, butler in the fourth generation"
+	icon_state ="book8_0"
+	base_icon_state = "book8"
+	bookfile = "Neu_cooking.json"
+
+/obj/item/book/rogue/psybibble
+	name = "The Book"
+	icon_state = "psybibble_0"
+	base_icon_state = "psybibble"
+	title = "bible"
+	dat = "gott.json"
+	force = 2
+	force_wielded = 4
+	throwforce = 1
+	possible_item_intents = list(/datum/intent/use, /datum/intent/mace/strike/wood)
+
+/obj/item/book/rogue/psybibble/read(mob/user)
+	if(!open)
+		to_chat(user, "<span class='info'>Open me first.</span>")
+		return FALSE
+	if(!user.client || !user.hud_used)
+		return
+	if(!user.hud_used.reads)
+		return
+	if(!user.can_read(src))
+		user.mind.adjust_experience(/datum/skill/misc/reading, 4, FALSE)
+		return
+	if(in_range(user, src) || isobserver(user))
+		user.changeNext_move(CLICK_CD_MELEE)
+		var/m
+		var/list/verses = world.file2list("strings/psybibble.txt")
+		m = pick(verses)
+		if(m)
+			user.say(m)
+
+/obj/item/book/rogue/psybibble/attack(mob/living/M, mob/user)
+	if(user.mind && user.mind.assigned_role == "Preacher")
+		if(!user.can_read(src))
+			//to_chat(user, "<span class='warning'>I don't understand these scribbly black lines.</span>")
+			return
+		M.apply_status_effect(/datum/status_effect/buff/blessed)
+		user.visible_message("<span class='notice'>[user] blesses [M].</span>")
+		playsound(user, 'sound/magic/bless.ogg', 100, FALSE)
+		return
+
+/datum/status_effect/buff/blessed
+	id = "blessed"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/blessed
+	effectedstats = list("fortune" = 1)
+	duration = 20 MINUTES
+
+/atom/movable/screen/alert/status_effect/buff/blessed
+	name = "Blessed"
+	desc = "The Weeping God fills my heart."
+	icon_state = "buff"
+
+/datum/status_effect/buff/blessed/on_apply()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.add_stress(/datum/stressevent/blessed)
+
+/datum/status_effect/buff/blessed/on_remove()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.remove_stress(/datum/stressevent/blessed)

@@ -1,12 +1,12 @@
 /**
-  *This is the proc that handles the order of an item_attack.
-  *The order of procs called is:
-  *tool_act on the target. If it returns TRUE, the chain will be stopped.
-  *pre_attack() on src. If this returns TRUE, the chain will be stopped.
-  *attackby on the target. If it returns TRUE, the chain will be stopped.
-  *and lastly
-  *afterattack. The return value does not matter.
-  */
+ *This is the proc that handles the order of an item_attack.
+ *The order of procs called is:
+ *tool_act on the target. If it returns TRUE, the chain will be stopped.
+ *pre_attack() on src. If this returns TRUE, the chain will be stopped.
+ *attackby on the target. If it returns TRUE, the chain will be stopped.
+ *and lastly
+ *afterattack. The return value does not matter.
+ */
 /obj/item/proc/melee_attack_chain(mob/user, atom/target, params)
 	if(user.check_arm_grabbed(user.active_hand_index))
 		to_chat(user, "<span class='notice'>I can't move my arm!</span>")
@@ -67,6 +67,7 @@
 
 /mob/living
 	var/tempatarget = null
+	var/pegleg = 0			//Handles check & slowdown for peglegs. Fuckin' bootleg, literally, but hey it at least works.
 
 /obj/item/proc/attack(mob/living/M, mob/living/user)
 	if(SEND_SIGNAL(src, COMSIG_ITEM_ATTACK, M, user) & COMPONENT_ITEM_NO_ATTACK)
@@ -115,16 +116,16 @@
 				user.do_attack_animation(M, visual_effect_icon = user.used_intent.animname)
 			return
 	if(istype(user.rmb_intent, /datum/rmb_intent/strong))
-		user.rogfat_add(15)
+		user.rogfat_add(10)
 	if(istype(user.rmb_intent, /datum/rmb_intent/swift))
-		user.rogfat_add(12)
+		user.rogfat_add(10)
 	if(M.checkdefense(user.used_intent, user))
 		if(M.d_intent == INTENT_PARRY)
-			if(!M.get_active_held_item()) //we parried with a bracer, redirect damage
+			if(!M.get_active_held_item() && !M.get_inactive_held_item()) //we parried with a bracer, redirect damage
 				if(M.active_hand_index == 1)
-					user.tempatarget = "l_arm"
+					user.tempatarget = BODY_ZONE_L_ARM
 				else
-					user.tempatarget = "r_arm"
+					user.tempatarget = BODY_ZONE_R_ARM
 				if(M.attacked_by(src, user)) //we change intents when attacking sometimes so don't play if we do (embedding items)
 					if(user.used_intent == cached_intent)
 						var/tempsound = user.used_intent.hitsound
@@ -139,7 +140,7 @@
 				user.do_attack_animation(M, visual_effect_icon = user.used_intent.animname)
 		return
 
-	if(user.zone_selected == BODY_ZONE_R_INHAND)
+	if(user.zone_selected == BODY_ZONE_PRECISE_R_INHAND)
 		var/offh = 0
 		var/obj/item/W = M.held_items[1]
 		if(W)
@@ -151,7 +152,7 @@
 							"<span class='boldwarning'>I'm disarmed by [user]!</span>")
 			return
 
-	if(user.zone_selected == BODY_ZONE_L_INHAND)
+	if(user.zone_selected == BODY_ZONE_PRECISE_L_INHAND)
 		var/offh = 0
 		var/obj/item/W = M.held_items[2]
 		if(W)
@@ -194,25 +195,44 @@
 /atom/movable/proc/attacked_by()
 	return FALSE
 
-/proc/get_complex_damage(obj/item/I, mob/living/user, blade_dulling)
+/*
+* I didnt code this but this is what ive deciphered.
+* Complex damage is the final calculation of damage
+* and the source of dulling for weapons.
+* This proc is also not overridable due to having no root.
+* -IP
+*/
+/proc/get_complex_damage(obj/item/I, mob/living/user, blade_dulling, turf/closed/mineral/T)
 	var/dullfactor = 1
-	if(!I.force)
+	if(!I?.force)
 		return 0
+	// newforce starts here and is the default amount of damage the item does.
 	var/newforce = I.force
 	testing("startforce [newforce]")
+	// If this weapon has no user and is somehow attacking you just return default.
+	if(!istype(user))
+		return newforce
 	var/cont = FALSE
 	var/used_str = user.STASTR
 	if(iscarbon(user))
 		var/mob/living/carbon/C = user
+		/*
+		* If you have a dominant hand which is assigned at
+		* character creation. You suffer a -1 Str if your
+		* no using the item in your dominant hand.
+		* Check living/carbon/carbon.dm for more info.
+		*/
 		if(C.domhand)
 			used_str = C.get_str_arms(C.used_hand)
+	//STR is +1 from STRONG stance and -1 from WEAK stance
 	if(istype(user.rmb_intent, /datum/rmb_intent/strong))
 		used_str++
 	if(istype(user.rmb_intent, /datum/rmb_intent/weak))
 		used_str--
+	//Your max STR is 20.
 	used_str = CLAMP(used_str, 1, 20)
 	if(used_str >= 11)
-		newforce = newforce + (newforce * ((used_str - 10) * 0.15))
+		newforce = newforce + (newforce * ((used_str - 10) * 0.1))
 	else if(used_str <= 9)
 		newforce = newforce - (newforce * ((10 - used_str) * 0.1))
 
@@ -220,9 +240,11 @@
 		var/effective = I.minstr
 		if(I.wielded)
 			effective = max(I.minstr / 2, 1)
+		//Strength influence is reduced to 30%
 		if(effective > user.STASTR)
 			newforce = max(newforce*0.3, 1)
 
+	//Blade Dulling Starts here.
 	switch(blade_dulling)
 		if(DULLING_CUT) //wooden that can't be attacked by clubs (trees, bushes, grass)
 			switch(user.used_intent.blade_class)
@@ -233,6 +255,13 @@
 						dullfactor = 0.75
 					cont = TRUE
 				if(BCLASS_CHOP)
+					//Additional damage for axes against trees.
+					if(istype(I, /obj/item/rogueweapon))
+						var/obj/item/rogueweapon/R = I
+						if(R.axe_cut)
+							//Yes i know its cheap to just make it a flat plus.
+							newforce = newforce + R.axe_cut
+							testing("newforcewood+[R.axe_cut]")
 					if(!I.remove_bintegrity(1))
 						dullfactor = 0.2
 					else
@@ -270,19 +299,45 @@
 				if(BCLASS_BLUNT)
 					cont = TRUE
 				if(BCLASS_PICK)
-					dullfactor = 1.5
+					var/mob/living/miner = user
+					var/mineskill = miner.mind.get_skill_level(/datum/skill/labor/mining)
+					dullfactor = 1.6 - (mineskill * 0.1)
 					cont = TRUE
 			if(!cont)
 				return 0
 		if(DULLING_PICK) //cannot deal damage if not a pick item. aka rock walls
+			if(!(user.mobility_flags & MOBILITY_STAND))
+				to_chat(user, span_warning("I need to stand up to get a proper swing."))
+				return 0
 			if(user.used_intent.blade_class != BCLASS_PICK)
 				return 0
-			newforce = newforce * 30
+			var/mob/living/miner = user
+			//Mining Skill force multiplier.
+			var/mineskill = miner.mind.get_skill_level(/datum/skill/labor/mining)
+			newforce = newforce * (8+(mineskill*1.5))
+			// Pick quality multiplier. Affected by smithing, or material of the pick.
+			if(istype(I, /obj/item/rogueweapon/pick))
+				var/obj/item/rogueweapon/pick/P = I
+				newforce *= P.pickmult
 			shake_camera(user, 1, 1)
+			miner.mind.adjust_experience(/datum/skill/labor/mining, (miner.STAINT*0.2))
+	/*
+	* Ill be honest this final thing is extremely confusing.
+	* Newforce after being altered by strength stat is then
+	* multiplied by the damage factor of used_intent datum
+	* for exsample /datum/intent/mace/smash has a damfactor
+	* of 1.1. This value is then multiplied again by the
+	* dullfactor which ranges from 0.2 to 1.6 and is 1 by
+	* default. Picks are not effected by dullfactor if hitting
+	* a rock wall or anything with DULLING_PICK blade_dulling
+	* flag. This is alot.
+	*/
 	newforce = (newforce * user.used_intent.damfactor) * dullfactor
 	if(user.used_intent.get_chargetime() && user.client?.chargedprog < 100)
 		newforce = newforce * 0.5
+	// newforce is rounded upto the nearest intiger.
 	newforce = round(newforce,1)
+	//This is returning the maximum of the arguments meaning this is to prevent negative values.
 	newforce = max(newforce, 1)
 	testing("endforce [newforce]")
 	return newforce
@@ -366,7 +421,7 @@
 			return "body"
 		if(BODY_ZONE_PRECISE_MOUTH)
 			return "body"
-		if(BODY_ZONE_PRECISE_HAIR)
+		if(BODY_ZONE_PRECISE_SKULL)
 			return "body"
 		if(BODY_ZONE_PRECISE_EARS)
 			return "body"
@@ -384,9 +439,9 @@
 			return "body"
 		if(BODY_ZONE_PRECISE_GROIN)
 			return "body"
-		if(BODY_ZONE_R_INHAND)
+		if(BODY_ZONE_PRECISE_R_INHAND)
 			return "body"
-		if(BODY_ZONE_L_INHAND)
+		if(BODY_ZONE_PRECISE_L_INHAND)
 			return "body"
 	return "body"
 
@@ -402,13 +457,12 @@
 		apply_damage(newforce, I.damtype, def_zone = hitlim)
 		if(I.damtype == BRUTE)
 			next_attack_msg.Cut()
-			if(woundcritroll(user.used_intent.blade_class, newforce, user, hitlim) && HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))
-//				throw_alert("embeddedobject", /atom/movable/screen/alert/embeddedobject)
-				simple_embedded_objects |= I
-				I.add_mob_blood(src)
-				I.forceMove(src)
-				src.grabbedby(user, 1, item_override = I)
-				next_attack_msg += " <span class='userdanger'>[I] is stuck in [src]!</span>"
+			if(HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))
+				var/datum/wound/crit_wound  = simple_woundcritroll(user.used_intent.blade_class, newforce, user, hitlim)
+				if(should_embed_weapon(crit_wound, I))
+					// throw_alert("embeddedobject", /atom/movable/screen/alert/embeddedobject)
+					simple_add_embedded_object(I, silent = FALSE, crit_message = TRUE)
+					src.grabbedby(user, 1, item_override = I)
 			var/haha = user.used_intent.blade_class
 			if(newforce > 5)
 				if(haha != BCLASS_BLUNT)

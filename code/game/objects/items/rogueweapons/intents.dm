@@ -7,6 +7,7 @@
 /datum/intent
 	var/name = "intent"
 	var/desc = ""
+//	icon = 'icons/mob/roguehud.dmi'		so you can find the icons
 	var/icon_state = "instrike"
 	var/list/attack_verb = list("hits", "strikes")
 	var/obj/item/masteritem
@@ -346,14 +347,12 @@
 		user.visible_message("<span class='warning'>[user] taunts [M]!</span>", "<span class='warning'>I taunt [M]!</span>", ignored_mobs = targetl)
 		user.emote("taunt")
 		if(M.client)
+			M.taunted(user)
 			if(M.can_see_cone(user))
 				to_chat(M, "<span class='danger'>[user] taunts me!</span>")
 		else
 			M.taunted(user)
 	return
-
-/datum/intent/unarmed/claw
-	blade_class = BCLASS_CUT
 
 /datum/intent/unarmed/shove
 	name = "shove"
@@ -429,14 +428,14 @@
 	blade_class = BCLASS_BLUNT
 	hitsound = "punch_hard"
 	chargetime = 0
-	penfactor = 15
+	penfactor = 13
 	swingdelay = 0
 	candodge = TRUE
 	canparry = TRUE
 
 /datum/intent/simple/claw
 	name = "claw"
-	icon_state = "instrike"
+	icon_state = "inclaw"
 	attack_verb = list("slashes", "claws")
 	animname = "blank22"
 	blade_class = BCLASS_CUT
@@ -447,6 +446,20 @@
 	candodge = TRUE
 	canparry = TRUE
 	miss_text = "slashes the air!"
+
+/datum/intent/simple/peck
+	name = "peck"
+	icon_state = "instrike"
+	attack_verb = list("pecks", "scratches")
+	animname = "blank22"
+	blade_class = BCLASS_CUT
+	hitsound = "smallslash"
+	chargetime = 0
+	penfactor = 2
+	swingdelay = 1
+	candodge = TRUE
+	canparry = TRUE
+	miss_text = "pecks the air!"
 
 /datum/intent/simple/bite
 	name = "bite"
@@ -461,11 +474,24 @@
 	candodge = TRUE
 	canparry = TRUE
 
-
-/datum/intent/unarmed/claw
-	name = "claw"
+//Applies no wounds.
+/datum/intent/simple/touch
+	name = "touch"
 	icon_state = "instrike"
-	attack_verb = list("claws", "tears", "rips")
+	attack_verb = list("grasps", "touches", "taps")
+	animname = "blank22"
+	blade_class = null
+	hitsound = "punch_hard"
+	chargetime = 0
+	penfactor = 25
+	swingdelay = 1
+	candodge = TRUE
+	canparry = TRUE
+
+/datum/intent/unarmed/claw	// defined as attack with some AP
+	name = "claw"
+	icon_state = "inclaw"
+	attack_verb = list("claws", "scratches", "rends", "tears")
 	animname = "cut"
 	blade_class = BCLASS_CUT
 	hitsound = "smallslash"
@@ -473,16 +499,35 @@
 	candodge = TRUE
 	canparry = TRUE
 	miss_text = "claws the air!"
-	miss_sound = "bluntwooshmed"
+	miss_sound = "blunthwoosh"
+	chargetime = 0
+	misscost = 5
+	releasedrain = 5
+	swingdelay = 0
+	rmb_ranged = TRUE
 
 /datum/intent/unarmed/wwolf
 	name = "claw"
-	icon_state = "inchop"
+	icon_state = "inclaw"
 	attack_verb = list("claws", "mauls", "eviscerates")
 	animname = "cut"
 	blade_class = BCLASS_CHOP
 	hitsound = "genslash"
 	penfactor = 40
+	candodge = TRUE
+	canparry = TRUE
+	miss_text = "slashes the air!"
+	miss_sound = "bluntwooshlarge"
+
+/datum/intent/unarmed/ascendedclaw
+	name = "claw"
+	icon_state = "inclaw"
+	attack_verb = list("claws", "mauls", "eviscerates")
+	animname = "cut"
+	blade_class = BCLASS_CHOP
+	hitsound = "genslash"
+	penfactor = 131
+	damfactor = 40
 	candodge = TRUE
 	canparry = TRUE
 	miss_text = "slashes the air!"

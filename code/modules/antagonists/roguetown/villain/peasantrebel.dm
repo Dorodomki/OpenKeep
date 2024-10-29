@@ -8,10 +8,16 @@
 	job_rank = ROLE_PREBEL
 	antag_hud_type = ANTAG_HUD_REV
 	antag_hud_name = "rev"
-	var/datum/team/prebels/rev_team
 	show_in_roundend = FALSE
-	confess_lines = list("VIVA!", "DEATH TO THE NOBLES!")
+	isgoodguy = TRUE // Previous townies, still should get buffs, make chaos.
+	confess_lines = list(
+		"VIVA!", 
+		"DEATH TO THE NOBLES!",
+		"STICK IT TO THE MAN!",
+		"NO GODS, NO MASTERS!",
+	)
 	increase_votepwr = FALSE
+	var/datum/team/prebels/rev_team
 
 /datum/antagonist/prebel/examine_friendorfoe(datum/antagonist/examined_datum,mob/examiner,mob/examined)
 	if(istype(examined_datum, /datum/antagonist/prebel/head))
@@ -24,9 +30,9 @@
 	. = ..()
 	owner.special_role = ROLE_PREBEL
 	var/mob/living/carbon/human/H = owner.current
-	H.cmode_music = 'sound/music/combatbandit.ogg'
+	H.cmode_music = 'sound/music/combat_bandit.ogg'
 	H.add_stress(/datum/stressevent/prebel)
-	ADD_TRAIT(H, RTRAIT_VILLAIN, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_VILLAIN, TRAIT_GENERIC)
 
 /datum/antagonist/prebel/greet()
 	to_chat(owner, "<span class='danger'>I am a peasant rebel! It's time for a change in leadership for this town.</span>")
@@ -128,7 +134,7 @@
 		for(var/mob/living/carbon/human/L in get_hearers_in_view(6, get_turf(user)))
 			addtimer(CALLBACK(L,TYPE_PROC_REF(/mob/living/carbon/human, rev_ask), user,PR,inputty),1)
 
-/mob/living/carbon/human/proc/rev_ask(var/mob/living/carbon/human/guy,datum/antagonist/prebel/mind_datum,offer)
+/mob/living/carbon/human/proc/rev_ask(mob/living/carbon/human/guy,datum/antagonist/prebel/mind_datum,offer)
 	if(!guy || !mind_datum || !offer)
 		return
 	if(!mind)
@@ -196,15 +202,17 @@
 		for(var/datum/objective/objective in objectives)
 			if(objective.check_completion())
 				to_chat(world, "<B>Goal #[objective_count]</B>: [objective.explanation_text] <span class='greentext'>TRIUMPH!</span>")
+				playsound(world, 'sound/misc/triumph.ogg', 100, FALSE, pressure_affected = FALSE)
 			else
 				to_chat(world, "<B>Goal #[objective_count]</B>: [objective.explanation_text] <span class='redtext'>FAIL.</span>")
+				playsound(world, 'sound/misc/fail.ogg', 100, FALSE, pressure_affected = FALSE)
 				win = FALSE
 			objective_count++
 		if(win)
 			for(var/datum/mind/M in members)
 				if(considered_alive(M))
 					M.adjust_triumphs(5)
-			to_chat(world, "<span class='greentext'>The Peasant Rebellion has triumphed!</span>")
+			to_chat(world, "<span class='greentext'>The Peasant Rebellion has TRIUMPHED!</span>")
 		else
 			to_chat(world, "<span class='redtext'>The Peasant Rebellion has FAILED!</span>")
 		for(var/X in offers2join)
