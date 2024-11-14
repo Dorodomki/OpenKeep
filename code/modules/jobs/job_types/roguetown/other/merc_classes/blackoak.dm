@@ -23,7 +23,7 @@
 	beltl = /obj/item/rogueweapon/huntingknife/idagger/steel/special
 	shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/black
 	pants = /obj/item/clothing/under/roguetown/trou/leather
-	neck = /obj/item/clothing/neck/roguetown/chaincoif
+	neck = /obj/item/clothing/neck/roguetown/chaincoif/iron
 	backpack_contents = list(/obj/item/storage/belt/rogue/pouch/coins/poor)
 	if(H.mind)
 		H.mind.adjust_skillrank(/datum/skill/combat/knives, 3, TRUE)
@@ -37,7 +37,7 @@
 		H.mind.adjust_skillrank(/datum/skill/misc/medicine, 1, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/craft/crafting, 1, TRUE)
 
-		H.merctype = 4
+		H.merctype = 5
 
 		H.change_stat("endurance", 2)
 		H.change_stat("strength", 1)

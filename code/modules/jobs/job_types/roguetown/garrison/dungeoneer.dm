@@ -11,7 +11,6 @@
 		"Elf",		// Elsewhere lore suggests ancient elves were cannibals, so why not. N.
 		"Half-Elf",	// Half-elves are often the unwanted dregs of society. N.
 		"Dwarf",
-		"Tiefling",
 		"Dark Elf",
 		"Aasimar"
 	)

@@ -7,7 +7,9 @@
 	allowed_sexes = list(MALE, FEMALE)
 	allowed_races = list(
 		"Humen",
-		"Dwarf"
+		"Dwarf",
+		"Tiefling",
+		"Dark Elf"
 	)
 	outfit = /datum/outfit/job/roguetown/adventurer/masterblacksmith
 	maximum_possible_slots = 1

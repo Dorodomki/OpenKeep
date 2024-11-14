@@ -654,6 +654,21 @@
 			pic.color = get_detail_color()
 		add_overlay(pic)
 
+//................ Crimson Marauder ............... //
+/obj/item/clothing/head/roguetown/helmet/ironpot/marauder
+	name = "Jinete's Caspon"
+	desc = "A solid bronze helmet from the age of the Apotheosis war. It has been reinforced and decorated for hundreds of yils, the symbol of pride for any Jinete, if not entirely outdated and ceremonial"
+	icon_state = "crimson_marauder"
+	mob_overlay_icon = 'icons/roguetown/clothing/onmob/64x64/head.dmi'
+	bloody_icon = 'icons/effects/blood64x64.dmi'
+	bloody_icon_state = "helmetblood_big"
+	worn_x_dimension = 64
+	worn_y_dimension = 64
+	flags_inv = HIDEEARS
+	sellprice = VALUE_LEATHER_HELMET/2
+
+	armor = ARMOR_STEEL_BAD
+	body_parts_covered = NECK|HAIR|EARS|HEAD
 
 
 //......................................................................................................

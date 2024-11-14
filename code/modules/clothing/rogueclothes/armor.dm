@@ -277,6 +277,19 @@
 	armor = ARMOR_LEATHER_BEST
 	body_parts_covered = CHEST|VITALS
 
+//................ Crimson Marauder ............... //
+/obj/item/clothing/suit/roguetown/armor/leather/jacket/sea/marauder
+	slot_flags = ITEM_SLOT_ARMOR
+	name = "Jinete's Linothorax"
+	desc = "An equipment styled in the shape of the skirmisher tiefling nomads of the Crimsonlands, a modified version of the ancestral craft of the original tiefling equipment of the Apotheosis war. Most of the armor has been stripped in favor of limberness and ease of replacement. The stained leather bears a red devil face making a war cry, a horrid ancestor of some blood-thirsty tiefling, no doubt."
+	icon_state = "crimson_armor"
+	sleevetype = "shirt"
+	nodismemsleeves = TRUE
+
+	armor = ARMOR_LEATHER_BEST
+	body_parts_covered = CHEST|GROIN|LEGS|VITALS
+
+
 //................ Silk Coat ............... //
 /obj/item/clothing/suit/roguetown/armor/leather/jacket/silk_coat
 	name = "silk coat"
@@ -659,7 +672,7 @@
 	return ..()
 
 //................ Coat of Plate ............... //
-/obj/item/clothing/suit/roguetown/armor/brigandine/coatplates	// Scalemail with Bonus 50& integrity, minus 10% arrow armor. Brigandine for the heraldry I think.
+/obj/item/clothing/suit/roguetown/armor/brigandine/coatplates	// Scalemail with Bonus 50& integrity, minus 10% arrow armor. Brigandine for the heraldry I think.//nerfed 10 points in armor to make it match the new merc balance
 	name = "coat of plates"
 	desc = "A Zybantine leather coat with steel scales woven with miniscule threads of adamantine, \
 			ensuring the wearer an optimal defence with forgiving breathability and mobility."
@@ -668,7 +681,7 @@
 	sellprice = VALUE_SNOWFLAKE_STEEL
 
 	armor_class = ARMOR_CLASS_MEDIUM
-	armor = list("melee" = 90, "bullet" = 90, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
+	armor = list("melee" = 80, "bullet" = 90, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 0, "acid" = 0)
 	max_integrity = INTEGRITY_STRONG
 	prevent_crits = ALL_EXCEPT_STAB
 

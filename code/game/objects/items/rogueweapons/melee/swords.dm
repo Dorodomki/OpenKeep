@@ -395,7 +395,7 @@
 
 /obj/item/rogueweapon/sword/long/rider
 	force = 15
-	force_wielded = 30
+	force_wielded = 25//nerfed to iron tier
 	possible_item_intents = list(/datum/intent/sword/cut, /datum/intent/sword/strike)
 	gripped_intents = list(/datum/intent/sword/cut, /datum/intent/sword/strike, /datum/intent/longsword/chop)
 	icon_state = "tabi"
@@ -424,7 +424,7 @@
 
 /obj/item/rogueweapon/sword/long/marlin
 	force = 15
-	force_wielded = 30
+	force_wielded = 25//nerfed to iron tier
 	possible_item_intents = list(/datum/intent/sword/cut, /datum/intent/sword/strike)
 	gripped_intents = list(/datum/intent/sword/cut, /datum/intent/sword/strike, /datum/intent/longsword/chop, /datum/intent/longsword/thrust)
 	icon_state = "marlin"
@@ -1027,7 +1027,7 @@
 
 /obj/item/rogueweapon/sword/rapier/ironestoc
 	name = "iron estoc"
-	force = 16
+	force = 18//buffed it to be on pair with other iron weapons
 	desc = "A precise iron estoc, favored by the skilled duelists of Valoria."
 	icon_state = "estoc"
 	smeltresult = /obj/item/ingot/iron
@@ -1257,7 +1257,7 @@
 	slot_flags = ITEM_SLOT_BACK//how the fuck you could put this thing on your hip?
 	dropshrink = 0.75
 	smeltresult = /obj/item/ingot/copper
-	sellprice = 25//lets make the two bars worth it 
+	sellprice = 25//lets make the two bars worth it
 
 // Hoplite Kophesh
 /obj/item/rogueweapon/sword/khopesh
