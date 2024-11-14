@@ -10,27 +10,27 @@
 	category_tags = list(CTAG_MERCENARY)
 	maximum_possible_slots = 5
 
-/datum/outfit/job/roguetown/mercenary/underdweller/pre_equip(mob/living/carbon/human/H)//this role is a heavy hitter that breaks things fairly easy, gave them shield skill so they are on match with other classes
+/datum/outfit/job/roguetown/mercenary/underdweller/pre_equip(mob/living/carbon/human/H)
 	..()
 	pants = /obj/item/clothing/under/roguetown/trou/leather
-	wrists = /obj/item/clothing/wrists/roguetown/bracers/leather//arm armor since they don't get heavy gloves like other mercs do
 	armor = /obj/item/clothing/suit/roguetown/armor/cuirass/iron
 	shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/sailor/red
-	shoes = /obj/item/clothing/shoes/roguetown/boots/leather
+	shoes = /obj/item/clothing/shoes/roguetown/simpleshoes/buckle
 	belt = /obj/item/storage/belt/rogue/leather/mercenary
+	beltr = /obj/item/rogueweapon/knife/hunting
 	neck = /obj/item/clothing/neck/roguetown/chaincoif/iron
-	beltr = /obj/item/rogueweapon/huntingknife
 	backl = /obj/item/storage/backpack/rogue/backpack
 	backpack_contents = list(/obj/item/storage/belt/rogue/pouch/coins/poor=1)
 	if(H.mind)
 		H.mind.adjust_skillrank(/datum/skill/labor/mining, 3, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/wrestling, 4, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/unarmed, 3, TRUE)
+		H.mind.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/craft/crafting, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/craft/engineering, 1, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/lockpicking, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/reading, 1, TRUE)
-		H.mind.adjust_skillrank(/datum/skill/misc/swimming, 2, TRUE)
+		H.mind.adjust_skillrank(/datum/skill/misc/swimming, 1, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/climbing, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/medicine, 1, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/misc/sewing, 1, TRUE)
@@ -42,16 +42,15 @@
 	if(H.dna.species.id == "dwarf")
 		H.cmode_music = 'sound/music/combat_dwarf.ogg'
 		H.mind.adjust_skillrank(/datum/skill/combat/axesmaces, 3, TRUE)
-		H.mind.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
 		H.mind.adjust_skillrank(/datum/skill/combat/shields, 2, TRUE)
 		head = /obj/item/clothing/head/roguetown/helmet/leather/minershelm
 		beltl = /obj/item/rogueweapon/pick/paxe // Dorfs get a pick as their primary weapon and axes/maces to use it
+		backr = /obj/item/rogueweapon/shield/wood
 	else // No miner's helm for Delves as they haven nitevision now.
 		H.mind.adjust_skillrank(/datum/skill/combat/swords, 3, TRUE)
-		H.mind.adjust_skillrank(/datum/skill/combat/shields, 2, TRUE)
-		H.mind.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
+
 		beltl = /obj/item/rogueweapon/sword/sabre // Dark elves get a sabre as their primary weapon and swords skill, who woulda thought
 
-	H.merctype = 5
+	H.merctype = 3
 
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
