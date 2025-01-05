@@ -204,6 +204,28 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 	first_time_text = "THE MURDERWOOD"
 	converted_type = /area/rogue/indoors/shelter/woods
 
+/area/rogue/outdoors/woodscolony
+	name = "colony wilderness"
+	icon_state = "woods"
+	ambientsounds = AMB_FORESTDAY
+	ambientnight = AMB_FORESTNIGHT
+	spookysounds = SPOOKY_CROWS
+	spookynight = SPOOKY_FOREST
+	droning_sound = 'sound/music/area/forest.ogg'
+	droning_sound_dusk = 'sound/music/area/septimus.ogg'
+	droning_sound_night = 'sound/music/area/forestnight.ogg'
+	soundenv = 15
+	ambush_times = list("night","dawn","dusk","day")
+	ambush_types = list(
+				/turf/open/floor/rogue/grass)
+	ambush_mobs = list(
+				/mob/living/simple_animal/hostile/retaliate/rogue/wolf = 60,
+				/mob/living/simple_animal/hostile/retaliate/rogue/troll = 5,
+				/mob/living/simple_animal/hostile/retaliate/rogue/mole = 10)
+	first_time_text = "THE COLONIAL FOREST"
+	converted_type = /area/rogue/indoors/shelter/woods
+
+
 /area/rogue/indoors/shelter/woods
 	icon_state = "woods"
 	droning_sound = 'sound/music/area/forest.ogg'
@@ -213,6 +235,20 @@ GLOBAL_LIST_INIT(roguetown_areas_typecache, typecacheof(/area/rogue/indoors/town
 /area/rogue/outdoors/woods_safe
 	name = "woods"
 	icon_state = "woods"
+	ambientsounds = AMB_FORESTDAY
+	ambientnight = AMB_FORESTNIGHT
+	spookysounds = SPOOKY_CROWS
+	spookynight = SPOOKY_FOREST
+	droning_sound = 'sound/music/area/forest.ogg'
+	droning_sound_dusk = 'sound/music/area/septimus.ogg'
+	droning_sound_night = 'sound/music/area/forestnight.ogg'
+	soundenv = 15
+	converted_type = /area/rogue/indoors/shelter/woods
+
+/area/rogue/outdoors/woods_safe_dendor
+	name = "blessed forest"
+	icon_state = "woods"
+	first_time_text = "THE BLESSING OF DENDOR"
 	ambientsounds = AMB_FORESTDAY
 	ambientnight = AMB_FORESTNIGHT
 	spookysounds = SPOOKY_CROWS

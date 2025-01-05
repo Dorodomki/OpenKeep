@@ -197,3 +197,15 @@
 	clusterMin = 7
 	checkdensity = FALSE
 	allowed_areas = list(/area/rogue/outdoors)
+
+
+/obj/effect/landmark/mapGenerator/rogue/roguecolony
+	mapGeneratorType = /datum/mapGenerator/roguecolony
+	endTurfX = 200
+	endTurfY = 200
+	startTurfX = 1
+	startTurfY = 1
+
+
+/datum/mapGenerator/roguecolony
+	modules = list(/datum/mapGeneratorModule/ambushing,/datum/mapGeneratorModule/roguetownfield/grass,/datum/mapGeneratorModule/roguetowngrass,/datum/mapGeneratorModule/roguetownfield,/datum/mapGeneratorModule/roguetownfield/road,/datum/mapGeneratorModule/roguetownswampwaterturf,/datum/mapGeneratorModule/roguetownwaterturf)
