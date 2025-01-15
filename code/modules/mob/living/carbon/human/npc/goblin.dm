@@ -87,15 +87,15 @@
 //	qdel(H)
 
 /obj/item/bodypart/chest/goblin
-	dismemberable = 0
+	dismemberable = 1
 /obj/item/bodypart/l_arm/goblin
-	dismemberable = 0
+	dismemberable = 1
 /obj/item/bodypart/r_arm/goblin
-	dismemberable = 0
+	dismemberable = 1
 /obj/item/bodypart/r_leg/goblin
-	dismemberable = 0
+	dismemberable = 1
 /obj/item/bodypart/l_leg/goblin
-	dismemberable = 0
+	dismemberable = 1
 
 /obj/item/bodypart/head/goblin/update_icon_dropped()
 	return

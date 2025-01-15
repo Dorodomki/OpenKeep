@@ -855,3 +855,46 @@
 	name = "ancient ceremonial gloves"
 	icon_state = "vgloves"
 	smeltresult = /obj/item/ingot/steel
+
+//................ LIZARDMEN GEAR ............... //
+
+/obj/item/clothing/suit/roguetown/armor/leather/hide/lizardmen
+	name = "slave loincloth"
+	icon_state = "slave_cloth_icon"
+	item_state = "slave_cloth"
+	icon = 'icons/roguetown/mob/monster/stonekeep_lizardmen.dmi'
+	allowed_race = list("lizardmen")
+	sewrepair = TRUE
+	smeltresult = /obj/item/ash
+	sellprice = VALUE_LEATHER_ARMOR
+
+	armor_class = AC_LIGHT
+	armor = ARMOR_LEATHER_BAD
+	body_parts_covered = COVERAGE_TORSO
+	prevent_crits = ALL_EXCEPT_CHOP_AND_STAB
+	max_integrity = INTEGRITY_STANDARD
+
+/obj/item/clothing/suit/roguetown/armor/leather/lizardmen
+	name = "warrior leatherplaque"
+	icon_state = "hard_icon"
+	item_state = "hard_lizard"
+	allowed_race = list("lizardmen")
+	smeltresult = /obj/item/ash
+	sellprice = VALUE_LEATHER_ARMOR_PLUS
+
+	armor = ARMOR_LEATHER_GOOD
+	prevent_crits = ALL_EXCEPT_STAB
+	max_integrity = INTEGRITY_STRONG
+
+/obj/item/clothing/suit/roguetown/armor/leather/lizardmen
+	name = "warrior leatherplaque"
+	icon_state = "hard_icon"
+	item_state = "hard_lizard"
+	allowed_race = list("lizardmen")
+	smeltresult = /obj/item/ash
+	sellprice = VALUE_LEATHER_ARMOR_PLUS
+
+	armor = ARMOR_LEATHER_GOOD
+	prevent_crits = ALL_EXCEPT_STAB
+	max_integrity = INTEGRITY_STRONG
+

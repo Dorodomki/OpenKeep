@@ -1280,6 +1280,38 @@
 	prevent_crits = ONLY_VITAL_ORGANS
 	max_integrity = INTEGRITY_POOR
 
+/obj/item/clothing/head/roguetown/helmet/lizardmen
+	name = "lizardmen warrior helmet"
+	icon_state = "bronze_helmet_icon"
+	item_state = "bronze_helmet"
+	allowed_race = list("lizardmen")
+	desc = "a decorated full helmet of bronze, the design doesn't fit anything else besides the deformated wearer."
+	icon = 'icons/roguetown/mob/monster/stonekeep_lizardmen.dmi'
+	smeltresult = /obj/item/ash
+	sellprice = VALUE_STEEL_HELMET
+	armor = ARMOR_PLATE
+	body_parts_covered = FULL_HEAD
+	prevent_crits = ALL_EXCEPT_BLUNT
+	max_integrity = INTEGRITY_STRONGEST
+
+	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
+	body_parts_covered = HEAD_NECK
+
+/obj/item/clothing/head/roguetown/helmet/lizardmen/slave
+	name = "lizardmen slave collar"
+	icon_state = "slave_collar_icon"
+	item_state = "slave_collar"
+	allowed_race = list("lizardmen")
+	desc = "a crude copper slave collar, the design doesn't fit anything else besides the deformated wearer."
+	icon = 'icons/roguetown/mob/monster/stonekeep_lizardmen.dmi'
+	smeltresult = /obj/item/ash
+	sellprice = NO_MARKET_VALUE
+
+	armor = ARMOR_PADDED_GOOD
+	body_parts_covered = HEAD_NECK
+	prevent_crits = ONLY_VITAL_ORGANS
+	max_integrity = INTEGRITY_POOR
+
 
 //............... Rare Helmets ............... //
 ///obj/item/clothing/head/roguetown/helmet/rare
